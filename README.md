@@ -6,11 +6,11 @@
 - Σύρε το `DXF` μέσα στην εφαρμογή ή επίλεξέ το από το κουμπί επιλογής αρχείου
 - Η εφαρμογή υπολογίζει το `SHA-512` hash, δημιουργεί `PDF` στον ίδιο φάκελο και εμφανίζει το hash στην οθόνη
 - Στη συνέχεια μπορείς να ανοίξεις είτε το παραγόμενο `PDF` είτε τον φάκελο που το περιέχει
-- Σχετικό άρθρο χρήσης: `https://topometrics.gr/2020/12/05/αποδεικτικο-υποβολησ-ηλεκτρονικου-δ/`
+- Σχετικό άρθρο χρήσης: [Topometrics - Αποδεικτικό Υποβολής Ηλεκτρονικού Διαγράμματος](https://topometrics.gr/2020/12/05/%CE%B1%CF%80%CE%BF%CE%B4%CE%B5%CE%B9%CE%BA%CF%84%CE%B9%CE%BA%CE%BF-%CF%85%CF%80%CE%BF%CE%B2%CE%BF%CE%BB%CE%B7%CF%83-%CE%B7%CE%BB%CE%B5%CE%BA%CF%84%CF%81%CE%BF%CE%BD%CE%B9%CE%BA%CE%BF%CF%85-%CE%B4/)
 
 Λήψη installer:
 
-- Latest release: `https://github.com/rtsketo/HashPDF/releases/latest`
+- [Κατέβασε το latest release installer](https://github.com/rtsketo/HashPDF/releases/latest)
 
 ## Ελληνικά
 
