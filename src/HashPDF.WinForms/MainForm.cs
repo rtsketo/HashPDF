@@ -353,8 +353,7 @@ namespace HashPDF.WinForms
                     : selectedFilePath;
                 outputValueLabel.Text = TextCatalog.Get(currentLanguage, "BusyPdfValue");
                 statusLabel.Text = TextCatalog.Get(currentLanguage, "BusyStatus");
-                openFolderButton.Enabled = false;
-                openPdfButton.Enabled = false;
+                UpdateActionButtons(false);
                 return;
             }
 
@@ -364,8 +363,7 @@ namespace HashPDF.WinForms
                 fileValueLabel.Text = lastResult.SourceFilePath;
                 outputValueLabel.Text = lastResult.OutputPdfPath;
                 statusLabel.Text = TextCatalog.Get(currentLanguage, "ReadyStatus");
-                openFolderButton.Enabled = true;
-                openPdfButton.Enabled = true;
+                UpdateActionButtons(true);
                 return;
             }
 
@@ -375,8 +373,15 @@ namespace HashPDF.WinForms
                 : selectedFilePath;
             outputValueLabel.Text = TextCatalog.Get(currentLanguage, "PdfPlaceholder");
             statusLabel.Text = TextCatalog.Get(currentLanguage, "IdleStatus");
-            openFolderButton.Enabled = false;
-            openPdfButton.Enabled = false;
+            UpdateActionButtons(false);
+        }
+
+        private void UpdateActionButtons(bool canOpenFiles)
+        {
+            bool keepWhiteTextInDarkMode = currentTheme == AppTheme.Dark;
+            bool enableButtons = canOpenFiles || keepWhiteTextInDarkMode;
+            openFolderButton.Enabled = enableButtons;
+            openPdfButton.Enabled = enableButtons;
         }
 
         private void ResultPanelPaint(object sender, PaintEventArgs e)
