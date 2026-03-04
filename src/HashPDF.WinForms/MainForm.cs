@@ -19,10 +19,15 @@ namespace HashPDF.WinForms
         private readonly Label subtitleLabel;
         private readonly Label languageLabel;
         private readonly ComboBox languageComboBox;
+        private readonly Label inputTitleLabel;
+        private readonly Label inputSubtitleLabel;
         private readonly DropSurfacePanel dropSurfacePanel;
         private readonly Button browseButton;
         private readonly Panel resultPanel;
         private readonly Label resultTitleLabel;
+        private readonly Label hashCaptionLabel;
+        private readonly Label fileCaptionLabel;
+        private readonly Label outputCaptionLabel;
         private readonly TextBox hashTextBox;
         private readonly Label fileValueLabel;
         private readonly Label outputValueLabel;
@@ -38,10 +43,10 @@ namespace HashPDF.WinForms
         {
             Text = "HashPDF";
             StartPosition = FormStartPosition.CenterScreen;
-            MinimumSize = new Size(960, 640);
-            ClientSize = new Size(1100, 720);
-            BackColor = Color.FromArgb(245, 247, 250);
-            Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 161);
+            MinimumSize = new Size(1040, 680);
+            ClientSize = new Size(1180, 760);
+            BackColor = Color.FromArgb(243, 245, 241);
+            Font = new Font("Segoe UI", 9.5F, FontStyle.Regular, GraphicsUnit.Point, 161);
 
             worker = new BackgroundWorker();
             worker.DoWork += WorkerDoWork;
@@ -49,74 +54,105 @@ namespace HashPDF.WinForms
 
             Panel headerPanel = new Panel();
             headerPanel.Dock = DockStyle.Top;
-            headerPanel.Height = 110;
-            headerPanel.Padding = new Padding(28, 24, 28, 8);
+            headerPanel.Height = 128;
+            headerPanel.Padding = new Padding(32, 28, 32, 12);
             Controls.Add(headerPanel);
 
             titleLabel = new Label();
             titleLabel.AutoSize = true;
-            titleLabel.Font = new Font("Segoe UI Semibold", 24F, FontStyle.Bold, GraphicsUnit.Point, 161);
-            titleLabel.ForeColor = Color.FromArgb(20, 31, 48);
+            titleLabel.Font = new Font("Segoe UI Semibold", 28F, FontStyle.Bold, GraphicsUnit.Point, 161);
+            titleLabel.ForeColor = Color.FromArgb(26, 34, 32);
             headerPanel.Controls.Add(titleLabel);
 
             subtitleLabel = new Label();
-            subtitleLabel.AutoSize = true;
-            subtitleLabel.Top = 52;
-            subtitleLabel.Font = new Font("Segoe UI", 10.5F, FontStyle.Regular, GraphicsUnit.Point, 161);
-            subtitleLabel.ForeColor = Color.FromArgb(88, 101, 119);
+            subtitleLabel.AutoSize = false;
+            subtitleLabel.Left = 2;
+            subtitleLabel.Top = 60;
+            subtitleLabel.Width = 660;
+            subtitleLabel.Height = 46;
+            subtitleLabel.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point, 161);
+            subtitleLabel.ForeColor = Color.FromArgb(97, 108, 104);
             headerPanel.Controls.Add(subtitleLabel);
 
             Panel languagePanel = new Panel();
             languagePanel.Dock = DockStyle.Right;
-            languagePanel.Width = 220;
+            languagePanel.Width = 214;
+            languagePanel.BackColor = Color.White;
+            languagePanel.Paint += ResultPanelPaint;
             headerPanel.Controls.Add(languagePanel);
 
             languageLabel = new Label();
             languageLabel.AutoSize = true;
-            languageLabel.Left = 16;
-            languageLabel.Top = 12;
+            languageLabel.Left = 18;
+            languageLabel.Top = 16;
             languageLabel.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 161);
-            languageLabel.ForeColor = Color.FromArgb(63, 77, 97);
+            languageLabel.ForeColor = Color.FromArgb(97, 108, 104);
             languagePanel.Controls.Add(languageLabel);
 
             languageComboBox = new ComboBox();
             languageComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             languageComboBox.FlatStyle = FlatStyle.Flat;
-            languageComboBox.Left = 16;
-            languageComboBox.Top = 36;
-            languageComboBox.Width = 180;
+            languageComboBox.Left = 18;
+            languageComboBox.Top = 42;
+            languageComboBox.Width = 176;
+            languageComboBox.Height = 32;
             languageComboBox.SelectedIndexChanged += LanguageComboBoxSelectedIndexChanged;
             languagePanel.Controls.Add(languageComboBox);
 
             TableLayoutPanel bodyLayout = new TableLayoutPanel();
             bodyLayout.Dock = DockStyle.Fill;
-            bodyLayout.Padding = new Padding(28, 4, 28, 20);
+            bodyLayout.Padding = new Padding(32, 0, 32, 20);
             bodyLayout.ColumnCount = 2;
-            bodyLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 57F));
-            bodyLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 43F));
+            bodyLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 52F));
+            bodyLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 48F));
             Controls.Add(bodyLayout);
 
             Panel leftColumn = new Panel();
             leftColumn.Dock = DockStyle.Fill;
-            leftColumn.Margin = new Padding(0, 0, 18, 0);
+            leftColumn.Margin = new Padding(0, 0, 14, 0);
+            leftColumn.Padding = new Padding(24, 24, 24, 24);
+            leftColumn.BackColor = Color.White;
+            leftColumn.Paint += ResultPanelPaint;
             bodyLayout.Controls.Add(leftColumn, 0, 0);
 
+            inputTitleLabel = new Label();
+            inputTitleLabel.AutoSize = true;
+            inputTitleLabel.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold, GraphicsUnit.Point, 161);
+            inputTitleLabel.ForeColor = Color.FromArgb(26, 34, 32);
+            inputTitleLabel.Left = 24;
+            inputTitleLabel.Top = 24;
+            leftColumn.Controls.Add(inputTitleLabel);
+
+            inputSubtitleLabel = new Label();
+            inputSubtitleLabel.Left = 24;
+            inputSubtitleLabel.Top = 58;
+            inputSubtitleLabel.Width = 470;
+            inputSubtitleLabel.Height = 42;
+            inputSubtitleLabel.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 161);
+            inputSubtitleLabel.ForeColor = Color.FromArgb(97, 108, 104);
+            leftColumn.Controls.Add(inputSubtitleLabel);
+
             dropSurfacePanel = new DropSurfacePanel();
-            dropSurfacePanel.Dock = DockStyle.Top;
-            dropSurfacePanel.Height = 420;
+            dropSurfacePanel.Dock = DockStyle.None;
+            dropSurfacePanel.Left = 24;
+            dropSurfacePanel.Top = 118;
+            dropSurfacePanel.Width = 470;
+            dropSurfacePanel.Height = 356;
+            dropSurfacePanel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             dropSurfacePanel.FileDropped += DropSurfacePanelFileDropped;
             leftColumn.Controls.Add(dropSurfacePanel);
 
             browseButton = CreatePrimaryButton();
-            browseButton.Top = 440;
-            browseButton.Left = 0;
-            browseButton.Width = 190;
+            browseButton.Top = 494;
+            browseButton.Left = 24;
+            browseButton.Width = 204;
+            browseButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             browseButton.Click += BrowseButtonClick;
             leftColumn.Controls.Add(browseButton);
 
             Panel rightColumn = new Panel();
             rightColumn.Dock = DockStyle.Fill;
-            rightColumn.Margin = new Padding(18, 0, 0, 0);
+            rightColumn.Margin = new Padding(14, 0, 0, 0);
             bodyLayout.Controls.Add(rightColumn, 1, 0);
 
             resultPanel = new Panel();
@@ -128,53 +164,76 @@ namespace HashPDF.WinForms
 
             resultTitleLabel = new Label();
             resultTitleLabel.AutoSize = true;
-            resultTitleLabel.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 161);
-            resultTitleLabel.ForeColor = Color.FromArgb(20, 31, 48);
+            resultTitleLabel.Left = 24;
+            resultTitleLabel.Top = 24;
+            resultTitleLabel.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold, GraphicsUnit.Point, 161);
+            resultTitleLabel.ForeColor = Color.FromArgb(26, 34, 32);
             resultPanel.Controls.Add(resultTitleLabel);
+
+            hashCaptionLabel = new Label();
+            hashCaptionLabel.AutoSize = true;
+            hashCaptionLabel.Left = 24;
+            hashCaptionLabel.Top = 62;
+            hashCaptionLabel.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 161);
+            hashCaptionLabel.ForeColor = Color.FromArgb(97, 108, 104);
+            resultPanel.Controls.Add(hashCaptionLabel);
 
             hashTextBox = new TextBox();
             hashTextBox.Multiline = true;
             hashTextBox.ReadOnly = true;
-            hashTextBox.ScrollBars = ScrollBars.Vertical;
+            hashTextBox.WordWrap = false;
+            hashTextBox.ScrollBars = ScrollBars.Horizontal;
             hashTextBox.BorderStyle = BorderStyle.FixedSingle;
-            hashTextBox.Font = new Font("Consolas", 10F, FontStyle.Regular, GraphicsUnit.Point, 161);
-            hashTextBox.BackColor = Color.FromArgb(248, 250, 252);
+            hashTextBox.Font = new Font("Consolas", 9.5F, FontStyle.Regular, GraphicsUnit.Point, 161);
+            hashTextBox.BackColor = Color.FromArgb(247, 249, 247);
             hashTextBox.ForeColor = Color.FromArgb(37, 50, 65);
-            hashTextBox.Left = 0;
-            hashTextBox.Top = 42;
-            hashTextBox.Width = 380;
-            hashTextBox.Height = 220;
+            hashTextBox.Left = 24;
+            hashTextBox.Top = 86;
+            hashTextBox.Width = 416;
+            hashTextBox.Height = 116;
             hashTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             resultPanel.Controls.Add(hashTextBox);
 
-            fileValueLabel = CreateMetaLabel(282);
+            fileCaptionLabel = CreateSectionLabel(224);
+            fileCaptionLabel.Left = 24;
+            resultPanel.Controls.Add(fileCaptionLabel);
+
+            fileValueLabel = CreateMetaLabel(246);
+            fileValueLabel.Left = 24;
             resultPanel.Controls.Add(fileValueLabel);
 
-            outputValueLabel = CreateMetaLabel(332);
+            outputCaptionLabel = CreateSectionLabel(330);
+            outputCaptionLabel.Left = 24;
+            resultPanel.Controls.Add(outputCaptionLabel);
+
+            outputValueLabel = CreateMetaLabel(352);
+            outputValueLabel.Left = 24;
             resultPanel.Controls.Add(outputValueLabel);
 
             openFolderButton = CreateSecondaryButton();
-            openFolderButton.Top = 396;
-            openFolderButton.Left = 0;
-            openFolderButton.Width = 170;
+            openFolderButton.Top = 426;
+            openFolderButton.Left = 24;
+            openFolderButton.Width = 168;
+            openFolderButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             openFolderButton.Enabled = false;
             openFolderButton.Click += OpenFolderButtonClick;
             resultPanel.Controls.Add(openFolderButton);
 
             openPdfButton = CreatePrimaryButton();
-            openPdfButton.Top = 396;
-            openPdfButton.Left = 186;
-            openPdfButton.Width = 170;
+            openPdfButton.Top = 426;
+            openPdfButton.Left = 208;
+            openPdfButton.Width = 168;
+            openPdfButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             openPdfButton.Enabled = false;
             openPdfButton.Click += OpenPdfButtonClick;
             resultPanel.Controls.Add(openPdfButton);
 
             statusLabel = new Label();
             statusLabel.Dock = DockStyle.Bottom;
-            statusLabel.Height = 34;
-            statusLabel.Padding = new Padding(28, 0, 28, 10);
+            statusLabel.Height = 44;
+            statusLabel.Padding = new Padding(32, 0, 32, 12);
             statusLabel.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular, GraphicsUnit.Point, 161);
-            statusLabel.ForeColor = Color.FromArgb(88, 101, 119);
+            statusLabel.ForeColor = Color.FromArgb(97, 108, 104);
             Controls.Add(statusLabel);
 
             currentLanguage = AppLanguage.Greek;
@@ -188,7 +247,7 @@ namespace HashPDF.WinForms
             button.Height = 44;
             button.FlatStyle = FlatStyle.Flat;
             button.FlatAppearance.BorderSize = 0;
-            button.BackColor = Color.FromArgb(20, 137, 125);
+            button.BackColor = Color.FromArgb(24, 115, 90);
             button.ForeColor = Color.White;
             button.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 161);
             button.Cursor = Cursors.Hand;
@@ -197,10 +256,27 @@ namespace HashPDF.WinForms
 
         private static Button CreateSecondaryButton()
         {
-            Button button = CreatePrimaryButton();
-            button.BackColor = Color.FromArgb(226, 232, 240);
+            Button button = new Button();
+            button.Height = 44;
+            button.FlatStyle = FlatStyle.Flat;
+            button.FlatAppearance.BorderSize = 1;
+            button.FlatAppearance.BorderColor = Color.FromArgb(220, 226, 222);
+            button.BackColor = Color.White;
             button.ForeColor = Color.FromArgb(37, 50, 65);
+            button.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 161);
+            button.Cursor = Cursors.Hand;
             return button;
+        }
+
+        private static Label CreateSectionLabel(int top)
+        {
+            Label label = new Label();
+            label.AutoSize = true;
+            label.Left = 0;
+            label.Top = top;
+            label.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 161);
+            label.ForeColor = Color.FromArgb(97, 108, 104);
+            return label;
         }
 
         private static Label CreateMetaLabel(int top)
@@ -209,11 +285,14 @@ namespace HashPDF.WinForms
             label.AutoEllipsis = true;
             label.Left = 0;
             label.Top = top;
-            label.Width = 380;
-            label.Height = 36;
+            label.Width = 416;
+            label.Height = 58;
             label.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular, GraphicsUnit.Point, 161);
-            label.ForeColor = Color.FromArgb(74, 85, 104);
+            label.ForeColor = Color.FromArgb(37, 50, 65);
             label.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            label.BackColor = Color.FromArgb(247, 249, 247);
+            label.BorderStyle = BorderStyle.FixedSingle;
+            label.Padding = new Padding(10, 10, 10, 10);
             return label;
         }
 
@@ -230,8 +309,13 @@ namespace HashPDF.WinForms
             titleLabel.Text = TextCatalog.Get(currentLanguage, "HeaderTitle");
             subtitleLabel.Text = TextCatalog.Get(currentLanguage, "HeaderSubtitle");
             languageLabel.Text = TextCatalog.Get(currentLanguage, "LanguageLabel");
+            inputTitleLabel.Text = TextCatalog.Get(currentLanguage, "InputTitle");
+            inputSubtitleLabel.Text = TextCatalog.Get(currentLanguage, "InputSubtitle");
             browseButton.Text = TextCatalog.Get(currentLanguage, "BrowseButton");
             resultTitleLabel.Text = TextCatalog.Get(currentLanguage, "ResultTitle");
+            hashCaptionLabel.Text = TextCatalog.Get(currentLanguage, "HashCaption");
+            fileCaptionLabel.Text = TextCatalog.Get(currentLanguage, "FileCaption");
+            outputCaptionLabel.Text = TextCatalog.Get(currentLanguage, "PdfCaption");
             openFolderButton.Text = TextCatalog.Get(currentLanguage, "OpenFolderButton");
             openPdfButton.Text = TextCatalog.Get(currentLanguage, "OpenPdfButton");
             dropSurfacePanel.TitleText = TextCatalog.Get(currentLanguage, "DropTitle");
@@ -245,14 +329,10 @@ namespace HashPDF.WinForms
             if (worker.IsBusy)
             {
                 hashTextBox.Text = TextCatalog.Get(currentLanguage, "BusyHashPlaceholder");
-                fileValueLabel.Text = string.Format(
-                    "{0} {1}",
-                    TextCatalog.Get(currentLanguage, "FileLabel"),
-                    string.IsNullOrEmpty(selectedFilePath) ? TextCatalog.Get(currentLanguage, "UnavailableValue") : selectedFilePath);
-                outputValueLabel.Text = string.Format(
-                    "{0} {1}",
-                    TextCatalog.Get(currentLanguage, "PdfLabel"),
-                    TextCatalog.Get(currentLanguage, "BusyPdfValue"));
+                fileValueLabel.Text = string.IsNullOrEmpty(selectedFilePath)
+                    ? TextCatalog.Get(currentLanguage, "UnavailableValue")
+                    : selectedFilePath;
+                outputValueLabel.Text = TextCatalog.Get(currentLanguage, "BusyPdfValue");
                 statusLabel.Text = TextCatalog.Get(currentLanguage, "BusyStatus");
                 openFolderButton.Enabled = false;
                 openPdfButton.Enabled = false;
@@ -262,8 +342,8 @@ namespace HashPDF.WinForms
             if (lastResult != null)
             {
                 hashTextBox.Text = lastResult.HashValue;
-                fileValueLabel.Text = string.Format("{0} {1}", TextCatalog.Get(currentLanguage, "FileLabel"), lastResult.SourceFilePath);
-                outputValueLabel.Text = string.Format("{0} {1}", TextCatalog.Get(currentLanguage, "PdfLabel"), lastResult.OutputPdfPath);
+                fileValueLabel.Text = lastResult.SourceFilePath;
+                outputValueLabel.Text = lastResult.OutputPdfPath;
                 statusLabel.Text = TextCatalog.Get(currentLanguage, "ReadyStatus");
                 openFolderButton.Enabled = true;
                 openPdfButton.Enabled = true;
@@ -273,7 +353,7 @@ namespace HashPDF.WinForms
             hashTextBox.Text = TextCatalog.Get(currentLanguage, "HashPlaceholder");
             fileValueLabel.Text = string.IsNullOrEmpty(selectedFilePath)
                 ? TextCatalog.Get(currentLanguage, "FilePlaceholder")
-                : string.Format("{0} {1}", TextCatalog.Get(currentLanguage, "FileLabel"), selectedFilePath);
+                : selectedFilePath;
             outputValueLabel.Text = TextCatalog.Get(currentLanguage, "PdfPlaceholder");
             statusLabel.Text = TextCatalog.Get(currentLanguage, "IdleStatus");
             openFolderButton.Enabled = false;
@@ -282,10 +362,20 @@ namespace HashPDF.WinForms
 
         private void ResultPanelPaint(object sender, PaintEventArgs e)
         {
-            Rectangle rectangle = resultPanel.ClientRectangle;
+            Panel target = sender as Panel;
+            if (target == null)
+            {
+                return;
+            }
+
+            Rectangle rectangle = target.ClientRectangle;
             rectangle.Width -= 1;
             rectangle.Height -= 1;
-            ControlPaint.DrawBorder(e.Graphics, rectangle, Color.FromArgb(224, 229, 236), ButtonBorderStyle.Solid);
+            ControlPaint.DrawBorder(e.Graphics, rectangle, Color.FromArgb(220, 226, 222), ButtonBorderStyle.Solid);
+            using (SolidBrush brush = new SolidBrush(Color.FromArgb(231, 241, 237)))
+            {
+                e.Graphics.FillRectangle(brush, 0, 0, target.ClientSize.Width, 4);
+            }
         }
 
         private void LanguageComboBoxSelectedIndexChanged(object sender, EventArgs e)

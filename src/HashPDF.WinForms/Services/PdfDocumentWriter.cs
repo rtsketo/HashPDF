@@ -8,20 +8,14 @@ namespace HashPDF.WinForms.Services
 {
     public static class PdfDocumentWriter
     {
-        public static void WriteHashProof(string outputPdfPath, string hashValue, string generatedOn)
+        public static void WriteHashProof(string outputPdfPath, string hashValue)
         {
-            List<string> lines = new List<string>();
-            foreach (string chunk in SplitHash(hashValue, 32))
-            {
-                lines.Add(chunk);
-            }
-
-            string contentStream = BuildContentStream(lines);
+            string contentStream = BuildContentStream(hashValue);
             List<string> objects = new List<string>();
             objects.Add("<< /Type /Catalog /Pages 2 0 R >>");
             objects.Add("<< /Type /Pages /Count 1 /Kids [3 0 R] >>");
             objects.Add("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>");
-            objects.Add("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");
+            objects.Add("<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>");
             objects.Add(string.Format(CultureInfo.InvariantCulture, "<< /Length {0} >>\nstream\n{1}endstream", contentStream.Length, contentStream));
 
             WritePdf(outputPdfPath, objects);
@@ -67,38 +61,17 @@ namespace HashPDF.WinForms.Services
             }
         }
 
-        private static string BuildContentStream(IList<string> lines)
+        private static string BuildContentStream(string hashValue)
         {
             StringBuilder builder = new StringBuilder();
             builder.Append("BT\n");
-            builder.Append("/F1 12 Tf\n");
-
-            int y = 790;
-            for (int index = 0; index < lines.Count; index++)
-            {
-                builder.AppendFormat(CultureInfo.InvariantCulture, "1 0 0 1 48 {0} Tm\n", y);
-                builder.Append("(");
-                builder.Append(EscapePdfText(lines[index]));
-                builder.Append(") Tj\n");
-                y -= 18;
-            }
-
+            builder.Append("/F1 7 Tf\n");
+            builder.Append("1 0 0 1 28 790 Tm\n");
+            builder.Append("(");
+            builder.Append(EscapePdfText(hashValue));
+            builder.Append(") Tj\n");
             builder.Append("ET\n");
             return builder.ToString();
-        }
-
-        private static IEnumerable<string> SplitHash(string hashValue, int chunkLength)
-        {
-            if (string.IsNullOrEmpty(hashValue))
-            {
-                yield break;
-            }
-
-            for (int index = 0; index < hashValue.Length; index += chunkLength)
-            {
-                int length = Math.Min(chunkLength, hashValue.Length - index);
-                yield return hashValue.Substring(index, length);
-            }
         }
 
         private static string EscapePdfText(string value)

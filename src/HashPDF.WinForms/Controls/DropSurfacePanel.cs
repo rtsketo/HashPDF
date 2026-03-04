@@ -54,22 +54,22 @@ namespace HashPDF.WinForms.Controls
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
             Rectangle bounds = ClientRectangle;
-            bounds.Inflate(-1, -1);
+            bounds.Inflate(-2, -2);
 
             using (GraphicsPath path = CreateRoundedRectangle(bounds, 28))
             {
                 using (LinearGradientBrush brush = new LinearGradientBrush(
                     bounds,
-                    Color.FromArgb(250, 252, 255),
-                    Color.FromArgb(242, 247, 250),
+                    Color.FromArgb(252, 253, 252),
+                    Color.FromArgb(240, 246, 242),
                     LinearGradientMode.ForwardDiagonal))
                 {
                     e.Graphics.FillPath(brush, path);
                 }
 
-                using (Pen borderPen = new Pen(isDragActive ? Color.FromArgb(20, 137, 125) : Color.FromArgb(212, 220, 228), isDragActive ? 2.5F : 1.5F))
+                using (Pen borderPen = new Pen(isDragActive ? Color.FromArgb(24, 115, 90) : Color.FromArgb(214, 222, 218), isDragActive ? 2.5F : 1.5F))
                 {
-                    borderPen.DashStyle = DashStyle.Dash;
+                    borderPen.DashStyle = isDragActive ? DashStyle.Solid : DashStyle.Dash;
                     e.Graphics.DrawPath(borderPen, path);
                 }
             }
@@ -80,35 +80,40 @@ namespace HashPDF.WinForms.Controls
 
         private void DrawIcon(Graphics graphics)
         {
-            Rectangle circleRect = new Rectangle((Width / 2) - 36, 96, 72, 72);
-            Color circleColor = isDragActive ? Color.FromArgb(217, 246, 242) : Color.FromArgb(228, 244, 241);
-            Color strokeColor = Color.FromArgb(20, 137, 125);
+            Rectangle badgeRect = new Rectangle((Width / 2) - 42, 84, 84, 84);
+            Color badgeColor = isDragActive ? Color.FromArgb(217, 241, 233) : Color.FromArgb(231, 241, 237);
+            Color strokeColor = Color.FromArgb(24, 115, 90);
 
-            using (SolidBrush brush = new SolidBrush(circleColor))
+            using (GraphicsPath badgePath = CreateRoundedRectangle(badgeRect, 22))
             {
-                graphics.FillEllipse(brush, circleRect);
+                using (SolidBrush brush = new SolidBrush(badgeColor))
+                {
+                    graphics.FillPath(brush, badgePath);
+                }
             }
 
-            using (Pen pen = new Pen(strokeColor, 4F))
+            using (Pen pen = new Pen(strokeColor, 3F))
             {
-                graphics.DrawLine(pen, Width / 2, 112, Width / 2, 142);
-                graphics.DrawLine(pen, Width / 2 - 14, 130, Width / 2, 146);
-                graphics.DrawLine(pen, Width / 2 + 14, 130, Width / 2, 146);
-                graphics.DrawLine(pen, Width / 2 - 20, 160, Width / 2 + 20, 160);
+                graphics.DrawRectangle(pen, (Width / 2) - 20, 100, 40, 50);
+                graphics.DrawLine(pen, (Width / 2) + 4, 100, (Width / 2) + 20, 116);
+                graphics.DrawLine(pen, (Width / 2) + 4, 100, (Width / 2) + 4, 116);
+                graphics.DrawLine(pen, (Width / 2) + 4, 116, (Width / 2) + 20, 116);
+                graphics.DrawLine(pen, (Width / 2) - 10, 124, (Width / 2) + 10, 124);
+                graphics.DrawLine(pen, (Width / 2) - 10, 136, (Width / 2) + 10, 136);
             }
         }
 
         private void DrawText(Graphics graphics)
         {
-            Rectangle titleRect = new Rectangle(48, 204, Width - 96, 46);
-            Rectangle hintRect = new Rectangle(72, 254, Width - 144, 76);
+            Rectangle titleRect = new Rectangle(48, 194, Width - 96, 42);
+            Rectangle hintRect = new Rectangle(68, 242, Width - 136, 72);
 
             TextRenderer.DrawText(
                 graphics,
                 titleText,
-                new Font("Segoe UI Semibold", 16F, FontStyle.Bold, GraphicsUnit.Point, 161),
+                new Font("Segoe UI Semibold", 15F, FontStyle.Bold, GraphicsUnit.Point, 161),
                 titleRect,
-                Color.FromArgb(20, 31, 48),
+                Color.FromArgb(26, 34, 32),
                 TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.WordBreak);
 
             TextRenderer.DrawText(
@@ -116,7 +121,7 @@ namespace HashPDF.WinForms.Controls
                 hintText,
                 new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 161),
                 hintRect,
-                Color.FromArgb(88, 101, 119),
+                Color.FromArgb(97, 108, 104),
                 TextFormatFlags.HorizontalCenter | TextFormatFlags.Top | TextFormatFlags.WordBreak);
         }
 

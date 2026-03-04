@@ -1,5 +1,5 @@
 #define MyAppName "HashPDF"
-#define MyAppVersion "0.1.0"
+#define MyAppVersion "0.1.1"
 #define MyAppPublisher "HashPDF"
 #define MyAppURL "https://github.com/rtsketo/HashPDF"
 #define MyAppExeName "HashPDF.exe"
@@ -28,7 +28,6 @@ UninstallDisplayIcon={app}\{#MyAppExeName}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
-Name: "greek"; MessagesFile: "compiler:Languages\Greek.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"

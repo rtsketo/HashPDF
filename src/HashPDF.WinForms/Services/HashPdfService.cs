@@ -30,11 +30,9 @@ namespace HashPDF.WinForms.Services
 
             string hashValue = ComputeSha512(sourceFilePath);
             string outputPdfPath = BuildOutputPdfPath(sourceFilePath);
-            string generatedOn = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-
             try
             {
-                PdfDocumentWriter.WriteHashProof(outputPdfPath, hashValue, generatedOn);
+                PdfDocumentWriter.WriteHashProof(outputPdfPath, hashValue);
             }
             catch (UnauthorizedAccessException ex)
             {

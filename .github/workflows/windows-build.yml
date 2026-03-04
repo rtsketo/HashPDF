@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     env:
       BUILD_CONFIGURATION: Release
@@ -58,15 +58,14 @@ jobs:
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
 
-      - name: Verify .NET Framework 4.0 reference assemblies
+      - name: Restore NuGet packages
         shell: pwsh
         run: |
-          $referencePath = "${env:ProgramFiles(x86)}\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"
-          if (-not (Test-Path $referencePath)) {
-            throw ".NET Framework 4.0 reference assemblies were not found at $referencePath"
-          }
-
-          Write-Host "Found .NET Framework 4.0 reference assemblies at $referencePath"
+          msbuild $env:SOLUTION_PATH `
+            /t:Restore `
+            /p:Configuration=$env:BUILD_CONFIGURATION `
+            /p:Platform="Any CPU" `
+            /verbosity:minimal
 
       - name: Build solution
         shell: pwsh
