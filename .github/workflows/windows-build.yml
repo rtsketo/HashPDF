@@ -1,0 +1,114 @@
+name: Windows Build
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-2019
+
+    env:
+      BUILD_CONFIGURATION: Release
+      SOLUTION_PATH: HashPDF.sln
+      PROJECT_OUTPUT_DIR: src\HashPDF.WinForms\bin\Release
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Verify .NET Framework 4.0 reference assemblies
+        shell: pwsh
+        run: |
+          $referencePath = "${env:ProgramFiles(x86)}\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"
+          if (-not (Test-Path $referencePath)) {
+            throw ".NET Framework 4.0 reference assemblies were not found at $referencePath"
+          }
+
+          Write-Host "Found .NET Framework 4.0 reference assemblies at $referencePath"
+
+      - name: Build solution
+        shell: pwsh
+        run: |
+          msbuild $env:SOLUTION_PATH `
+            /t:Rebuild `
+            /p:Configuration=$env:BUILD_CONFIGURATION `
+            /p:Platform="Any CPU" `
+            /verbosity:minimal
+
+      - name: Prepare portable package
+        id: package
+        shell: pwsh
+        run: |
+          if ("${{ github.ref }}".StartsWith("refs/tags/")) {
+            $version = "${{ github.ref_name }}"
+          } else {
+            $version = "main-${{ github.run_number }}"
+          }
+
+          $packageRoot = Join-Path $env:GITHUB_WORKSPACE "dist\HashPDF-$version-portable"
+          $archivePath = Join-Path $env:GITHUB_WORKSPACE "dist\HashPDF-$version-portable.zip"
+
+          New-Item -ItemType Directory -Force -Path $packageRoot | Out-Null
+
+          Copy-Item "$env:PROJECT_OUTPUT_DIR\HashPDF.exe" $packageRoot
+          if (Test-Path "$env:PROJECT_OUTPUT_DIR\HashPDF.pdb") {
+            Copy-Item "$env:PROJECT_OUTPUT_DIR\HashPDF.pdb" $packageRoot
+          }
+
+          Copy-Item "src\HashPDF.WinForms\Assets\HashPDF.ico" $packageRoot
+          Copy-Item "README.md" $packageRoot
+          Copy-Item "installer\README.md" (Join-Path $packageRoot "INSTALLER.md")
+          Copy-Item "installer\HashPDF.iss" (Join-Path $packageRoot "HashPDF.iss")
+
+          if (Test-Path $archivePath) {
+            Remove-Item $archivePath -Force
+          }
+
+          Compress-Archive -Path "$packageRoot\*" -DestinationPath $archivePath
+
+          "artifact_name=hashpdf-windows-$version" >> $env:GITHUB_OUTPUT
+          "archive_path=$archivePath" >> $env:GITHUB_OUTPUT
+          "archive_name=HashPDF-$version-portable.zip" >> $env:GITHUB_OUTPUT
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package.outputs.artifact_name }}
+          path: ${{ steps.package.outputs.archive_path }}
+          if-no-files-found: error
+
+      - name: Publish GitHub release for tags
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $tagName = "${{ github.ref_name }}"
+          $archivePath = "${{ steps.package.outputs.archive_path }}"
+          $archiveName = "${{ steps.package.outputs.archive_name }}"
+
+          $releaseNotes = @"
+          Automated release for $tagName.
+
+          Included artifact:
+          - $archiveName
+          "@
+
+          gh release view $tagName *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $tagName "$archivePath#Portable package" --clobber
+          } else {
+            gh release create $tagName "$archivePath#Portable package" --title "HashPDF $tagName" --notes $releaseNotes
+          }
