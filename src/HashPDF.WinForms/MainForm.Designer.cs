@@ -277,10 +277,10 @@ namespace HashPDF.WinForms
             this.hashTextBox.Multiline = true;
             this.hashTextBox.Name = "hashTextBox";
             this.hashTextBox.ReadOnly = true;
-            this.hashTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
+            this.hashTextBox.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.hashTextBox.Size = new System.Drawing.Size(471, 116);
             this.hashTextBox.TabIndex = 2;
-            this.hashTextBox.WordWrap = false;
+            this.hashTextBox.WordWrap = true;
             // 
             // fileCaptionLabel
             // 
