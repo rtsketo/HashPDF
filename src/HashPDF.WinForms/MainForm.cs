@@ -31,6 +31,7 @@ namespace HashPDF.WinForms
         public MainForm()
         {
             InitializeComponent();
+            ApplyWindowIcon();
             InitializeDropSurfacePanel();
 
             worker = new BackgroundWorker();
@@ -40,6 +41,22 @@ namespace HashPDF.WinForms
             LoadUserPreferences();
             ApplyLanguage();
             ApplyTheme();
+        }
+
+        private void ApplyWindowIcon()
+        {
+            try
+            {
+                Icon applicationIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+                if (applicationIcon != null)
+                {
+                    Icon = applicationIcon;
+                }
+            }
+            catch
+            {
+                // Ignore icon assignment failures and keep default icon.
+            }
         }
 
         private void InitializeDropSurfacePanel()
