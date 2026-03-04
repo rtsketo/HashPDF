@@ -20,10 +20,40 @@ jobs:
       BUILD_CONFIGURATION: Release
       SOLUTION_PATH: HashPDF.sln
       PROJECT_OUTPUT_DIR: src\HashPDF.WinForms\bin\Release
+      DOTNET40_DOWNLOAD_URL: https://download.microsoft.com/download/9/5/a/95a9616b-7a37-4af6-bc36-d6ea96c8daae/dotNetFx40_Full_x86_x64.exe
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Determine release version
+        id: version
+        shell: pwsh
+        run: |
+          $semanticVersion = (Get-Content VERSION -Raw).Trim()
+          if (-not ($semanticVersion -match '^\d+\.\d+\.\d+$')) {
+            throw "VERSION must follow semantic version format X.Y.Z"
+          }
+
+          $isTag = "${{ github.ref }}".StartsWith("refs/tags/")
+          if ($isTag) {
+            $tagName = "${{ github.ref_name }}"
+            if ($tagName -ne "v$semanticVersion") {
+              throw "Tag $tagName does not match VERSION $semanticVersion"
+            }
+
+            $labelVersion = $semanticVersion
+          } else {
+            $labelVersion = "$semanticVersion-main-${{ github.run_number }}"
+          }
+
+          "semantic_version=$semanticVersion" >> $env:GITHUB_OUTPUT
+          "label_version=$labelVersion" >> $env:GITHUB_OUTPUT
+
+      - name: Verify version metadata is synchronized
+        shell: pwsh
+        run: |
+          pwsh -File build/Sync-Version.ps1 -Check
 
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
@@ -47,19 +77,40 @@ jobs:
             /p:Platform="Any CPU" `
             /verbosity:minimal
 
-      - name: Prepare portable package
+      - name: Download .NET Framework 4.0 redistributable
+        shell: pwsh
+        run: |
+          $destination = "installer\redist\dotNetFx40_Full_x86_x64.exe"
+          New-Item -ItemType Directory -Force -Path "installer\redist" | Out-Null
+          Invoke-WebRequest -Uri $env:DOTNET40_DOWNLOAD_URL -OutFile $destination
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: |
+          choco install innosetup --no-progress -y
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            throw "ISCC.exe was not found at $iscc"
+          }
+
+          & $iscc "installer\HashPDF.iss"
+
+      - name: Prepare release packages
         id: package
         shell: pwsh
         run: |
-          if ("${{ github.ref }}".StartsWith("refs/tags/")) {
-            $version = "${{ github.ref_name }}"
-          } else {
-            $version = "main-${{ github.run_number }}"
-          }
+          $version = "${{ steps.version.outputs.label_version }}"
 
           $packageRoot = Join-Path $env:GITHUB_WORKSPACE "dist\HashPDF-$version-portable"
           $archivePath = Join-Path $env:GITHUB_WORKSPACE "dist\HashPDF-$version-portable.zip"
+          $setupSource = Join-Path $env:GITHUB_WORKSPACE "installer\output\HashPDF-Setup.exe"
+          $setupPath = Join-Path $env:GITHUB_WORKSPACE "dist\HashPDF-Setup-$version.exe"
 
+          New-Item -ItemType Directory -Force -Path (Join-Path $env:GITHUB_WORKSPACE "dist") | Out-Null
           New-Item -ItemType Directory -Force -Path $packageRoot | Out-Null
 
           Copy-Item "$env:PROJECT_OUTPUT_DIR\HashPDF.exe" $packageRoot
@@ -77,16 +128,21 @@ jobs:
           }
 
           Compress-Archive -Path "$packageRoot\*" -DestinationPath $archivePath
+          Copy-Item $setupSource $setupPath -Force
 
           "artifact_name=hashpdf-windows-$version" >> $env:GITHUB_OUTPUT
           "archive_path=$archivePath" >> $env:GITHUB_OUTPUT
           "archive_name=HashPDF-$version-portable.zip" >> $env:GITHUB_OUTPUT
+          "setup_path=$setupPath" >> $env:GITHUB_OUTPUT
+          "setup_name=HashPDF-Setup-$version.exe" >> $env:GITHUB_OUTPUT
 
-      - name: Upload workflow artifact
+      - name: Upload workflow artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.package.outputs.artifact_name }}
-          path: ${{ steps.package.outputs.archive_path }}
+          path: |
+            ${{ steps.package.outputs.archive_path }}
+            ${{ steps.package.outputs.setup_path }}
           if-no-files-found: error
 
       - name: Publish GitHub release for tags
@@ -98,17 +154,21 @@ jobs:
           $tagName = "${{ github.ref_name }}"
           $archivePath = "${{ steps.package.outputs.archive_path }}"
           $archiveName = "${{ steps.package.outputs.archive_name }}"
+          $setupPath = "${{ steps.package.outputs.setup_path }}"
+          $setupName = "${{ steps.package.outputs.setup_name }}"
 
           $releaseNotes = @"
           Automated release for $tagName.
 
           Included artifact:
           - $archiveName
+          - $setupName
           "@
 
           gh release view $tagName *> $null
           if ($LASTEXITCODE -eq 0) {
             gh release upload $tagName "$archivePath#Portable package" --clobber
+            gh release upload $tagName "$setupPath#Installer" --clobber
           } else {
-            gh release create $tagName "$archivePath#Portable package" --title "HashPDF $tagName" --notes $releaseNotes
+            gh release create $tagName "$archivePath#Portable package" "$setupPath#Installer" --title "HashPDF $tagName" --notes $releaseNotes
           }
