@@ -22,7 +22,6 @@ namespace HashPDF.WinForms
         private readonly Label inputTitleLabel;
         private readonly Label inputSubtitleLabel;
         private readonly DropSurfacePanel dropSurfacePanel;
-        private readonly Button browseButton;
         private readonly Panel resultPanel;
         private readonly Label resultTitleLabel;
         private readonly Label hashCaptionLabel;
@@ -137,18 +136,11 @@ namespace HashPDF.WinForms
             dropSurfacePanel.Left = 24;
             dropSurfacePanel.Top = 118;
             dropSurfacePanel.Width = 470;
-            dropSurfacePanel.Height = 356;
-            dropSurfacePanel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            dropSurfacePanel.Height = 420;
+            dropSurfacePanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dropSurfacePanel.FileDropped += DropSurfacePanelFileDropped;
+            dropSurfacePanel.Click += DropSurfacePanelClick;
             leftColumn.Controls.Add(dropSurfacePanel);
-
-            browseButton = CreatePrimaryButton();
-            browseButton.Top = 494;
-            browseButton.Left = 24;
-            browseButton.Width = 204;
-            browseButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            browseButton.Click += BrowseButtonClick;
-            leftColumn.Controls.Add(browseButton);
 
             Panel rightColumn = new Panel();
             rightColumn.Dock = DockStyle.Fill;
@@ -311,7 +303,6 @@ namespace HashPDF.WinForms
             languageLabel.Text = TextCatalog.Get(currentLanguage, "LanguageLabel");
             inputTitleLabel.Text = TextCatalog.Get(currentLanguage, "InputTitle");
             inputSubtitleLabel.Text = TextCatalog.Get(currentLanguage, "InputSubtitle");
-            browseButton.Text = TextCatalog.Get(currentLanguage, "BrowseButton");
             resultTitleLabel.Text = TextCatalog.Get(currentLanguage, "ResultTitle");
             hashCaptionLabel.Text = TextCatalog.Get(currentLanguage, "HashCaption");
             fileCaptionLabel.Text = TextCatalog.Get(currentLanguage, "FileCaption");
@@ -390,7 +381,7 @@ namespace HashPDF.WinForms
             ApplyLanguage();
         }
 
-        private void BrowseButtonClick(object sender, EventArgs e)
+        private void DropSurfacePanelClick(object sender, EventArgs e)
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
