@@ -1,9 +1,14 @@
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using HashPDF.WinForms.Controls;
+using HashPDF.WinForms.Exceptions;
 using HashPDF.WinForms.Localization;
+using HashPDF.WinForms.Models;
+using HashPDF.WinForms.Services;
 
 namespace HashPDF.WinForms
 {
@@ -26,6 +31,8 @@ namespace HashPDF.WinForms
         private readonly Label statusLabel;
 
         private AppLanguage currentLanguage;
+        private string selectedFilePath;
+        private HashPdfResult lastResult;
 
         public MainForm()
         {
@@ -151,6 +158,7 @@ namespace HashPDF.WinForms
             openFolderButton.Left = 0;
             openFolderButton.Width = 170;
             openFolderButton.Enabled = false;
+            openFolderButton.Click += OpenFolderButtonClick;
             resultPanel.Controls.Add(openFolderButton);
 
             openPdfButton = CreatePrimaryButton();
@@ -158,6 +166,7 @@ namespace HashPDF.WinForms
             openPdfButton.Left = 186;
             openPdfButton.Width = 170;
             openPdfButton.Enabled = false;
+            openPdfButton.Click += OpenPdfButtonClick;
             resultPanel.Controls.Add(openPdfButton);
 
             statusLabel = new Label();
@@ -171,7 +180,6 @@ namespace HashPDF.WinForms
             currentLanguage = AppLanguage.Greek;
             RefreshLanguageOptions();
             ApplyLanguage();
-            SetIdleState();
         }
 
         private static Button CreatePrimaryButton()
@@ -229,13 +237,43 @@ namespace HashPDF.WinForms
             dropSurfacePanel.TitleText = TextCatalog.Get(currentLanguage, "DropTitle");
             dropSurfacePanel.HintText = TextCatalog.Get(currentLanguage, "DropHint");
             RefreshLanguageOptions();
-            SetIdleState();
+            RefreshVisibleState();
         }
 
-        private void SetIdleState()
+        private void RefreshVisibleState()
         {
+            if (worker.IsBusy)
+            {
+                hashTextBox.Text = TextCatalog.Get(currentLanguage, "BusyHashPlaceholder");
+                fileValueLabel.Text = string.Format(
+                    "{0} {1}",
+                    TextCatalog.Get(currentLanguage, "FileLabel"),
+                    string.IsNullOrEmpty(selectedFilePath) ? TextCatalog.Get(currentLanguage, "UnavailableValue") : selectedFilePath);
+                outputValueLabel.Text = string.Format(
+                    "{0} {1}",
+                    TextCatalog.Get(currentLanguage, "PdfLabel"),
+                    TextCatalog.Get(currentLanguage, "BusyPdfValue"));
+                statusLabel.Text = TextCatalog.Get(currentLanguage, "BusyStatus");
+                openFolderButton.Enabled = false;
+                openPdfButton.Enabled = false;
+                return;
+            }
+
+            if (lastResult != null)
+            {
+                hashTextBox.Text = lastResult.HashValue;
+                fileValueLabel.Text = string.Format("{0} {1}", TextCatalog.Get(currentLanguage, "FileLabel"), lastResult.SourceFilePath);
+                outputValueLabel.Text = string.Format("{0} {1}", TextCatalog.Get(currentLanguage, "PdfLabel"), lastResult.OutputPdfPath);
+                statusLabel.Text = TextCatalog.Get(currentLanguage, "ReadyStatus");
+                openFolderButton.Enabled = true;
+                openPdfButton.Enabled = true;
+                return;
+            }
+
             hashTextBox.Text = TextCatalog.Get(currentLanguage, "HashPlaceholder");
-            fileValueLabel.Text = TextCatalog.Get(currentLanguage, "FilePlaceholder");
+            fileValueLabel.Text = string.IsNullOrEmpty(selectedFilePath)
+                ? TextCatalog.Get(currentLanguage, "FilePlaceholder")
+                : string.Format("{0} {1}", TextCatalog.Get(currentLanguage, "FileLabel"), selectedFilePath);
             outputValueLabel.Text = TextCatalog.Get(currentLanguage, "PdfPlaceholder");
             statusLabel.Text = TextCatalog.Get(currentLanguage, "IdleStatus");
             openFolderButton.Enabled = false;
@@ -270,22 +308,131 @@ namespace HashPDF.WinForms
                 dialog.Multiselect = false;
                 if (dialog.ShowDialog(this) == DialogResult.OK)
                 {
-                    statusLabel.Text = TextCatalog.Get(currentLanguage, "SelectionReadyStatus");
+                    BeginProcessing(dialog.FileName);
                 }
             }
         }
 
         private void DropSurfacePanelFileDropped(object sender, FileDroppedEventArgs e)
         {
-            statusLabel.Text = TextCatalog.Get(currentLanguage, "SelectionReadyStatus");
+            BeginProcessing(e.FilePath);
         }
 
         private void WorkerDoWork(object sender, DoWorkEventArgs e)
         {
+            string filePath = (string)e.Argument;
+            e.Result = HashPdfService.CreateHashProof(filePath);
         }
 
         private void WorkerRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            if (e.Error != null)
+            {
+                lastResult = null;
+                RefreshVisibleState();
+                ShowProcessingError(e.Error);
+                statusLabel.Text = TextCatalog.Get(currentLanguage, "FailedStatus");
+                return;
+            }
+
+            lastResult = e.Result as HashPdfResult;
+            if (lastResult != null)
+            {
+                selectedFilePath = lastResult.SourceFilePath;
+            }
+            RefreshVisibleState();
+        }
+
+        private void BeginProcessing(string filePath)
+        {
+            if (worker.IsBusy)
+            {
+                ShowError(TextCatalog.Get(currentLanguage, "BusyError"));
+                return;
+            }
+
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+            {
+                ShowError(TextCatalog.Get(currentLanguage, "MissingFileError"));
+                return;
+            }
+
+            selectedFilePath = filePath;
+            lastResult = null;
+            worker.RunWorkerAsync(filePath);
+            RefreshVisibleState();
+        }
+
+        private void OpenFolderButtonClick(object sender, EventArgs e)
+        {
+            if (lastResult == null || string.IsNullOrEmpty(lastResult.OutputPdfPath))
+            {
+                return;
+            }
+
+            try
+            {
+                Process.Start("explorer.exe", string.Format("/select,\"{0}\"", lastResult.OutputPdfPath));
+            }
+            catch (Exception ex)
+            {
+                ShowError(ex.Message);
+            }
+        }
+
+        private void OpenPdfButtonClick(object sender, EventArgs e)
+        {
+            if (lastResult == null || string.IsNullOrEmpty(lastResult.OutputPdfPath))
+            {
+                return;
+            }
+
+            try
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo(lastResult.OutputPdfPath);
+                startInfo.UseShellExecute = true;
+                Process.Start(startInfo);
+            }
+            catch (Exception ex)
+            {
+                ShowError(ex.Message);
+            }
+        }
+
+        private void ShowError(string message)
+        {
+            MessageBox.Show(
+                this,
+                message,
+                TextCatalog.Get(currentLanguage, "ErrorTitle"),
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+
+        private void ShowProcessingError(Exception error)
+        {
+            HashPdfException hashPdfException = error as HashPdfException;
+            if (hashPdfException == null)
+            {
+                ShowError(TextCatalog.Get(currentLanguage, "GenericProcessingError"));
+                return;
+            }
+
+            switch (hashPdfException.Code)
+            {
+                case HashPdfErrorCode.MissingFile:
+                    ShowError(TextCatalog.Get(currentLanguage, "MissingFileError"));
+                    break;
+                case HashPdfErrorCode.SourceDirectoryUnavailable:
+                    ShowError(TextCatalog.Get(currentLanguage, "MissingDirectoryError"));
+                    break;
+                case HashPdfErrorCode.CannotWritePdf:
+                    ShowError(TextCatalog.Get(currentLanguage, "WritePdfError"));
+                    break;
+                default:
+                    ShowError(TextCatalog.Get(currentLanguage, "GenericProcessingError"));
+                    break;
+            }
         }
 
         private sealed class LanguageItem
