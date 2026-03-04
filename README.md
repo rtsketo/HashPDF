@@ -25,10 +25,15 @@
 - Παράγεται `PDF` με όνομα `<όνομα-αρχείου>.hash.pdf` στον ίδιο φάκελο
 - Το UI εμφανίζει το hash και δίνει κουμπιά για άνοιγμα του PDF ή του φακέλου του
 
+Παράδειγμα χρήσης:
+
+- Για την εξαγωγή `Hash Code` από `DXF` και τη δημιουργία `PDF` που θα χρησιμοποιηθεί στην ψηφιακή υπογραφή τοπογραφικών διαγραμμάτων τα οποία υποβάλλονται ηλεκτρονικά για `ΚΗΔ`, όπως περιγράφεται στο σχετικό άρθρο του Topometrics
+
 Build σημείωση:
 
 - Το project στοχεύει `.NET Framework 4.0`
 - Για build σε Windows χρειάζονται τα αντίστοιχα reference assemblies ή το `Developer Pack`
+- Η διανομή μπορεί να γίνει με installer που θα εγκαθιστά αυτόματα το `.NET Framework 4.0`, ώστε ο τελικός χρήστης να μη χρειάζεται να ψάξει prerequisites
 - Στο τρέχον macOS περιβάλλον δεν υπάρχει το `.NET Framework 4.0 Targeting Pack`, άρα δεν έγινε τοπικό compile validation
 
 ## English
@@ -60,4 +65,5 @@ Build note:
 
 - The project targets `.NET Framework 4.0`
 - Building on Windows requires the matching reference assemblies or `Developer Pack`
+- Distribution can use an installer that bootstraps `.NET Framework 4.0` automatically, so the end user does not need to search for prerequisites
 - The current macOS environment does not include the `.NET Framework 4.0 Targeting Pack`, so local compile validation was not possible here
