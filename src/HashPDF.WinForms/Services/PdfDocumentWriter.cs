@@ -11,12 +11,6 @@ namespace HashPDF.WinForms.Services
         public static void WriteHashProof(string outputPdfPath, string hashValue, string generatedOn)
         {
             List<string> lines = new List<string>();
-            lines.Add("HashPDF");
-            lines.Add("Algorithm: SHA-512");
-            lines.Add("Generated: " + generatedOn);
-            lines.Add(string.Empty);
-            lines.Add("Hash:");
-
             foreach (string chunk in SplitHash(hashValue, 32))
             {
                 lines.Add(chunk);
@@ -77,21 +71,16 @@ namespace HashPDF.WinForms.Services
         {
             StringBuilder builder = new StringBuilder();
             builder.Append("BT\n");
-            builder.Append("/F1 18 Tf\n");
-            builder.Append("1 0 0 1 48 796 Tm\n");
-            builder.Append("(");
-            builder.Append(EscapePdfText(lines[0]));
-            builder.Append(") Tj\n");
-            builder.Append("/F1 11 Tf\n");
+            builder.Append("/F1 12 Tf\n");
 
-            int y = 764;
-            for (int index = 1; index < lines.Count; index++)
+            int y = 790;
+            for (int index = 0; index < lines.Count; index++)
             {
                 builder.AppendFormat(CultureInfo.InvariantCulture, "1 0 0 1 48 {0} Tm\n", y);
                 builder.Append("(");
                 builder.Append(EscapePdfText(lines[index]));
                 builder.Append(") Tj\n");
-                y -= lines[index].Length > 40 ? 20 : 18;
+                y -= 18;
             }
 
             builder.Append("ET\n");
