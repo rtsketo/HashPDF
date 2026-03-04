@@ -99,9 +99,9 @@ namespace HashPDF.WinForms
             this.languagePanel.Controls.Add(this.languageLabel);
             this.languagePanel.Controls.Add(this.languageComboBox);
             this.languagePanel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.languagePanel.Location = new System.Drawing.Point(729, 28);
+            this.languagePanel.Location = new System.Drawing.Point(846, 28);
             this.languagePanel.Name = "languagePanel";
-            this.languagePanel.Size = new System.Drawing.Size(419, 88);
+            this.languagePanel.Size = new System.Drawing.Size(302, 88);
             this.languagePanel.TabIndex = 0;
             this.languagePanel.Paint += new System.Windows.Forms.PaintEventHandler(this.ResultPanelPaint);
             // 
@@ -110,9 +110,9 @@ namespace HashPDF.WinForms
             this.themeLabel.AutoSize = true;
             this.themeLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
             this.themeLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
-            this.themeLabel.Location = new System.Drawing.Point(18, 16);
+            this.themeLabel.Location = new System.Drawing.Point(20, 16);
             this.themeLabel.Name = "themeLabel";
-            this.themeLabel.Size = new System.Drawing.Size(0, 15);
+            this.themeLabel.Size = new System.Drawing.Size(44, 15);
             this.themeLabel.TabIndex = 0;
             this.themeLabel.Text = "Theme";
             // 
@@ -124,7 +124,7 @@ namespace HashPDF.WinForms
             this.themeComboBox.Items.AddRange(new object[] {
             "Dark",
             "Light"});
-            this.themeComboBox.Location = new System.Drawing.Point(70, 42);
+            this.themeComboBox.Location = new System.Drawing.Point(23, 41);
             this.themeComboBox.Name = "themeComboBox";
             this.themeComboBox.Size = new System.Drawing.Size(124, 25);
             this.themeComboBox.TabIndex = 1;
@@ -135,9 +135,9 @@ namespace HashPDF.WinForms
             this.languageLabel.AutoSize = true;
             this.languageLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
             this.languageLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
-            this.languageLabel.Location = new System.Drawing.Point(232, 16);
+            this.languageLabel.Location = new System.Drawing.Point(166, 15);
             this.languageLabel.Name = "languageLabel";
-            this.languageLabel.Size = new System.Drawing.Size(0, 15);
+            this.languageLabel.Size = new System.Drawing.Size(59, 15);
             this.languageLabel.TabIndex = 2;
             this.languageLabel.Text = "Language";
             // 
@@ -149,9 +149,9 @@ namespace HashPDF.WinForms
             this.languageComboBox.Items.AddRange(new object[] {
             "Ελληνικά",
             "English"});
-            this.languageComboBox.Location = new System.Drawing.Point(232, 42);
+            this.languageComboBox.Location = new System.Drawing.Point(169, 41);
             this.languageComboBox.Name = "languageComboBox";
-            this.languageComboBox.Size = new System.Drawing.Size(176, 25);
+            this.languageComboBox.Size = new System.Drawing.Size(120, 25);
             this.languageComboBox.TabIndex = 3;
             this.languageComboBox.SelectedIndexChanged += new System.EventHandler(this.LanguageComboBoxSelectedIndexChanged);
             // 
@@ -160,9 +160,9 @@ namespace HashPDF.WinForms
             this.titleLabel.AutoSize = true;
             this.titleLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 28F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
             this.titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(34)))), ((int)(((byte)(32)))));
-            this.titleLabel.Location = new System.Drawing.Point(29, 16);
+            this.titleLabel.Location = new System.Drawing.Point(25, 16);
             this.titleLabel.Name = "titleLabel";
-            this.titleLabel.Size = new System.Drawing.Size(0, 51);
+            this.titleLabel.Size = new System.Drawing.Size(176, 51);
             this.titleLabel.TabIndex = 1;
             this.titleLabel.Text = "HashPDF";
             // 
@@ -214,7 +214,7 @@ namespace HashPDF.WinForms
             this.inputTitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(34)))), ((int)(((byte)(32)))));
             this.inputTitleLabel.Location = new System.Drawing.Point(24, 24);
             this.inputTitleLabel.Name = "inputTitleLabel";
-            this.inputTitleLabel.Size = new System.Drawing.Size(0, 28);
+            this.inputTitleLabel.Size = new System.Drawing.Size(103, 28);
             this.inputTitleLabel.TabIndex = 0;
             this.inputTitleLabel.Text = "Select File";
             // 
@@ -276,7 +276,7 @@ namespace HashPDF.WinForms
             this.resultTitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(34)))), ((int)(((byte)(32)))));
             this.resultTitleLabel.Location = new System.Drawing.Point(24, 24);
             this.resultTitleLabel.Name = "resultTitleLabel";
-            this.resultTitleLabel.Size = new System.Drawing.Size(0, 28);
+            this.resultTitleLabel.Size = new System.Drawing.Size(119, 28);
             this.resultTitleLabel.TabIndex = 0;
             this.resultTitleLabel.Text = "Hash Result";
             // 
@@ -285,9 +285,9 @@ namespace HashPDF.WinForms
             this.hashCaptionLabel.AutoSize = true;
             this.hashCaptionLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
             this.hashCaptionLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
-            this.hashCaptionLabel.Location = new System.Drawing.Point(24, 62);
+            this.hashCaptionLabel.Location = new System.Drawing.Point(24, 77);
             this.hashCaptionLabel.Name = "hashCaptionLabel";
-            this.hashCaptionLabel.Size = new System.Drawing.Size(0, 15);
+            this.hashCaptionLabel.Size = new System.Drawing.Size(85, 15);
             this.hashCaptionLabel.TabIndex = 1;
             this.hashCaptionLabel.Text = "SHA-512 Hash";
             // 
@@ -299,23 +299,23 @@ namespace HashPDF.WinForms
             this.hashTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.hashTextBox.Font = new System.Drawing.Font("Consolas", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
             this.hashTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(50)))), ((int)(((byte)(65)))));
-            this.hashTextBox.Location = new System.Drawing.Point(24, 86);
+            this.hashTextBox.Location = new System.Drawing.Point(24, 101);
             this.hashTextBox.Multiline = true;
             this.hashTextBox.Name = "hashTextBox";
             this.hashTextBox.ReadOnly = true;
             this.hashTextBox.Size = new System.Drawing.Size(471, 116);
             this.hashTextBox.TabIndex = 2;
-            this.hashTextBox.Text = "3A5902E0D4E5A9F9C5B8B08D6D6E65A5F632D34816F0C21213E88A53FD7A17764CC99E2AA2CC9334A95" +
-    "7F0E91E95EAC34F6079F57390E2D1F2F7B669FC0A4B71";
+            this.hashTextBox.Text = "3A5902E0D4E5A9F9C5B8B08D6D6E65A5F632D34816F0C21213E88A53FD7A17764CC99E2AA2CC9334A" +
+    "957F0E91E95EAC34F6079F57390E2D1F2F7B669FC0A4B71";
             // 
             // fileCaptionLabel
             // 
             this.fileCaptionLabel.AutoSize = true;
             this.fileCaptionLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
             this.fileCaptionLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
-            this.fileCaptionLabel.Location = new System.Drawing.Point(24, 224);
+            this.fileCaptionLabel.Location = new System.Drawing.Point(24, 239);
             this.fileCaptionLabel.Name = "fileCaptionLabel";
-            this.fileCaptionLabel.Size = new System.Drawing.Size(0, 15);
+            this.fileCaptionLabel.Size = new System.Drawing.Size(65, 15);
             this.fileCaptionLabel.TabIndex = 3;
             this.fileCaptionLabel.Text = "Source File";
             // 
@@ -328,7 +328,7 @@ namespace HashPDF.WinForms
             this.fileValueLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.fileValueLabel.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
             this.fileValueLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(50)))), ((int)(((byte)(65)))));
-            this.fileValueLabel.Location = new System.Drawing.Point(24, 246);
+            this.fileValueLabel.Location = new System.Drawing.Point(24, 261);
             this.fileValueLabel.Name = "fileValueLabel";
             this.fileValueLabel.Padding = new System.Windows.Forms.Padding(10);
             this.fileValueLabel.Size = new System.Drawing.Size(471, 58);
@@ -340,9 +340,9 @@ namespace HashPDF.WinForms
             this.outputCaptionLabel.AutoSize = true;
             this.outputCaptionLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
             this.outputCaptionLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
-            this.outputCaptionLabel.Location = new System.Drawing.Point(24, 330);
+            this.outputCaptionLabel.Location = new System.Drawing.Point(24, 345);
             this.outputCaptionLabel.Name = "outputCaptionLabel";
-            this.outputCaptionLabel.Size = new System.Drawing.Size(0, 15);
+            this.outputCaptionLabel.Size = new System.Drawing.Size(86, 15);
             this.outputCaptionLabel.TabIndex = 5;
             this.outputCaptionLabel.Text = "Generated PDF";
             // 
@@ -355,7 +355,7 @@ namespace HashPDF.WinForms
             this.outputValueLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.outputValueLabel.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
             this.outputValueLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(50)))), ((int)(((byte)(65)))));
-            this.outputValueLabel.Location = new System.Drawing.Point(24, 352);
+            this.outputValueLabel.Location = new System.Drawing.Point(24, 367);
             this.outputValueLabel.Name = "outputValueLabel";
             this.outputValueLabel.Padding = new System.Windows.Forms.Padding(10);
             this.outputValueLabel.Size = new System.Drawing.Size(471, 58);
