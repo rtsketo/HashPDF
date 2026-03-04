@@ -15,21 +15,39 @@ namespace HashPDF.WinForms
     public partial class MainForm : Form
     {
         private readonly BackgroundWorker worker;
+        private DropSurfacePanel dropSurfacePanel;
         private AppLanguage currentLanguage;
+        private AppTheme currentTheme;
         private string selectedFilePath;
         private HashPdfResult lastResult;
+        private bool suppressOptionEvents;
+        private Color panelBorderColor;
+        private Color panelTopAccentColor;
 
         public MainForm()
         {
             InitializeComponent();
+            InitializeDropSurfacePanel();
 
             worker = new BackgroundWorker();
             worker.DoWork += WorkerDoWork;
             worker.RunWorkerCompleted += WorkerRunWorkerCompleted;
 
             currentLanguage = AppLanguage.Greek;
-            RefreshLanguageOptions();
+            currentTheme = AppTheme.Light;
             ApplyLanguage();
+            ApplyTheme();
+        }
+
+        private void InitializeDropSurfacePanel()
+        {
+            dropSurfacePanel = new DropSurfacePanel();
+            dropSurfacePanel.Dock = DockStyle.Fill;
+            dropSurfacePanel.Margin = new Padding(0);
+            dropSurfacePanel.FileDropped += DropSurfacePanelFileDropped;
+            dropSurfacePanel.Click += DropSurfacePanelClick;
+            dropSurfaceHostPanel.Controls.Clear();
+            dropSurfaceHostPanel.Controls.Add(dropSurfacePanel);
         }
 
         private static Button CreatePrimaryButton()
@@ -99,6 +117,7 @@ namespace HashPDF.WinForms
         {
             titleLabel.Text = TextCatalog.Get(currentLanguage, "HeaderTitle");
             subtitleLabel.Text = TextCatalog.Get(currentLanguage, "HeaderSubtitle");
+            darkModeCheckBox.Text = TextCatalog.Get(currentLanguage, "DarkModeToggle");
             languageLabel.Text = TextCatalog.Get(currentLanguage, "LanguageLabel");
             inputTitleLabel.Text = TextCatalog.Get(currentLanguage, "InputTitle");
             inputSubtitleLabel.Text = TextCatalog.Get(currentLanguage, "InputSubtitle");
@@ -110,8 +129,81 @@ namespace HashPDF.WinForms
             openPdfButton.Text = TextCatalog.Get(currentLanguage, "OpenPdfButton");
             dropSurfacePanel.TitleText = TextCatalog.Get(currentLanguage, "DropTitle");
             dropSurfacePanel.HintText = TextCatalog.Get(currentLanguage, "DropHint");
-            RefreshLanguageOptions();
+            suppressOptionEvents = true;
+            try
+            {
+                darkModeCheckBox.Checked = currentTheme == AppTheme.Dark;
+                RefreshLanguageOptions();
+            }
+            finally
+            {
+                suppressOptionEvents = false;
+            }
+
+            ApplyTheme();
             RefreshVisibleState();
+        }
+
+        private void ApplyTheme()
+        {
+            bool dark = currentTheme == AppTheme.Dark;
+
+            Color formBackground = dark ? Color.FromArgb(22, 26, 30) : Color.FromArgb(243, 245, 241);
+            Color panelBackground = dark ? Color.FromArgb(33, 39, 45) : Color.White;
+            Color headingText = dark ? Color.FromArgb(236, 242, 239) : Color.FromArgb(26, 34, 32);
+            Color bodyText = dark ? Color.FromArgb(220, 229, 225) : Color.FromArgb(37, 50, 65);
+            Color mutedText = dark ? Color.FromArgb(168, 180, 176) : Color.FromArgb(97, 108, 104);
+            Color fieldBackground = dark ? Color.FromArgb(43, 50, 58) : Color.FromArgb(247, 249, 247);
+            Color comboBackground = dark ? Color.FromArgb(43, 50, 58) : Color.White;
+            Color primaryButton = dark ? Color.FromArgb(40, 151, 117) : Color.FromArgb(24, 115, 90);
+            Color secondaryBorder = dark ? Color.FromArgb(73, 83, 92) : Color.FromArgb(220, 226, 222);
+
+            panelBorderColor = secondaryBorder;
+            panelTopAccentColor = dark ? Color.FromArgb(48, 118, 99) : Color.FromArgb(231, 241, 237);
+
+            BackColor = formBackground;
+            headerPanel.BackColor = formBackground;
+            bodyLayout.BackColor = formBackground;
+            leftColumn.BackColor = panelBackground;
+            rightColumn.BackColor = formBackground;
+            resultPanel.BackColor = panelBackground;
+            languagePanel.BackColor = panelBackground;
+            statusLabel.BackColor = formBackground;
+
+            titleLabel.ForeColor = headingText;
+            subtitleLabel.ForeColor = mutedText;
+            inputTitleLabel.ForeColor = headingText;
+            inputSubtitleLabel.ForeColor = mutedText;
+            resultTitleLabel.ForeColor = headingText;
+            hashCaptionLabel.ForeColor = mutedText;
+            fileCaptionLabel.ForeColor = mutedText;
+            outputCaptionLabel.ForeColor = mutedText;
+            darkModeCheckBox.ForeColor = mutedText;
+            languageLabel.ForeColor = mutedText;
+            statusLabel.ForeColor = mutedText;
+
+            hashTextBox.BackColor = fieldBackground;
+            hashTextBox.ForeColor = bodyText;
+            fileValueLabel.BackColor = fieldBackground;
+            fileValueLabel.ForeColor = bodyText;
+            outputValueLabel.BackColor = fieldBackground;
+            outputValueLabel.ForeColor = bodyText;
+            languageComboBox.BackColor = comboBackground;
+            languageComboBox.ForeColor = bodyText;
+
+            openFolderButton.BackColor = panelBackground;
+            openFolderButton.ForeColor = bodyText;
+            openFolderButton.FlatAppearance.BorderColor = secondaryBorder;
+
+            openPdfButton.BackColor = primaryButton;
+            openPdfButton.ForeColor = Color.White;
+
+            dropSurfacePanel.UseDarkTheme = dark;
+
+            headerPanel.Invalidate();
+            leftColumn.Invalidate();
+            languagePanel.Invalidate();
+            resultPanel.Invalidate();
         }
 
         private void RefreshVisibleState()
@@ -161,8 +253,8 @@ namespace HashPDF.WinForms
             Rectangle rectangle = target.ClientRectangle;
             rectangle.Width -= 1;
             rectangle.Height -= 1;
-            ControlPaint.DrawBorder(e.Graphics, rectangle, Color.FromArgb(220, 226, 222), ButtonBorderStyle.Solid);
-            using (SolidBrush brush = new SolidBrush(Color.FromArgb(231, 241, 237)))
+            ControlPaint.DrawBorder(e.Graphics, rectangle, panelBorderColor, ButtonBorderStyle.Solid);
+            using (SolidBrush brush = new SolidBrush(panelTopAccentColor))
             {
                 e.Graphics.FillRectangle(brush, 0, 0, target.ClientSize.Width, 4);
             }
@@ -170,6 +262,11 @@ namespace HashPDF.WinForms
 
         private void LanguageComboBoxSelectedIndexChanged(object sender, EventArgs e)
         {
+            if (suppressOptionEvents)
+            {
+                return;
+            }
+
             LanguageItem item = languageComboBox.SelectedItem as LanguageItem;
             if (item == null || item.Language == currentLanguage)
             {
@@ -178,6 +275,23 @@ namespace HashPDF.WinForms
 
             currentLanguage = item.Language;
             ApplyLanguage();
+        }
+
+        private void DarkModeCheckBoxCheckedChanged(object sender, EventArgs e)
+        {
+            if (suppressOptionEvents)
+            {
+                return;
+            }
+
+            AppTheme selectedTheme = darkModeCheckBox.Checked ? AppTheme.Dark : AppTheme.Light;
+            if (selectedTheme == currentTheme)
+            {
+                return;
+            }
+
+            currentTheme = selectedTheme;
+            ApplyTheme();
         }
 
         private void DropSurfacePanelClick(object sender, EventArgs e)
@@ -331,6 +445,12 @@ namespace HashPDF.WinForms
             {
                 return Label;
             }
+        }
+
+        private enum AppTheme
+        {
+            Light,
+            Dark
         }
     }
 }

@@ -8,6 +8,7 @@ namespace HashPDF.WinForms.Controls
     public sealed class DropSurfacePanel : Panel
     {
         private bool isDragActive;
+        private bool useDarkTheme;
         private string titleText;
         private string hintText;
 
@@ -47,6 +48,17 @@ namespace HashPDF.WinForms.Controls
             }
         }
 
+        public bool UseDarkTheme
+        {
+            get { return useDarkTheme; }
+            set
+            {
+                useDarkTheme = value;
+                BackColor = useDarkTheme ? Color.FromArgb(33, 39, 45) : Color.White;
+                Invalidate();
+            }
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
@@ -58,16 +70,21 @@ namespace HashPDF.WinForms.Controls
 
             using (GraphicsPath path = CreateRoundedRectangle(bounds, 28))
             {
+                Color gradientStart = useDarkTheme ? Color.FromArgb(40, 47, 54) : Color.FromArgb(252, 253, 252);
+                Color gradientEnd = useDarkTheme ? Color.FromArgb(30, 35, 41) : Color.FromArgb(240, 246, 242);
+                Color borderColor = useDarkTheme ? Color.FromArgb(78, 89, 99) : Color.FromArgb(214, 222, 218);
+                Color activeBorderColor = useDarkTheme ? Color.FromArgb(40, 151, 117) : Color.FromArgb(24, 115, 90);
+
                 using (LinearGradientBrush brush = new LinearGradientBrush(
                     bounds,
-                    Color.FromArgb(252, 253, 252),
-                    Color.FromArgb(240, 246, 242),
+                    gradientStart,
+                    gradientEnd,
                     LinearGradientMode.ForwardDiagonal))
                 {
                     e.Graphics.FillPath(brush, path);
                 }
 
-                using (Pen borderPen = new Pen(isDragActive ? Color.FromArgb(24, 115, 90) : Color.FromArgb(214, 222, 218), isDragActive ? 2.5F : 1.5F))
+                using (Pen borderPen = new Pen(isDragActive ? activeBorderColor : borderColor, isDragActive ? 2.5F : 1.5F))
                 {
                     borderPen.DashStyle = isDragActive ? DashStyle.Solid : DashStyle.Dash;
                     e.Graphics.DrawPath(borderPen, path);
@@ -81,8 +98,10 @@ namespace HashPDF.WinForms.Controls
         private void DrawIcon(Graphics graphics)
         {
             Rectangle badgeRect = new Rectangle((Width / 2) - 42, 84, 84, 84);
-            Color badgeColor = isDragActive ? Color.FromArgb(217, 241, 233) : Color.FromArgb(231, 241, 237);
-            Color strokeColor = Color.FromArgb(24, 115, 90);
+            Color badgeColor = useDarkTheme
+                ? (isDragActive ? Color.FromArgb(58, 88, 79) : Color.FromArgb(53, 66, 72))
+                : (isDragActive ? Color.FromArgb(217, 241, 233) : Color.FromArgb(231, 241, 237));
+            Color strokeColor = useDarkTheme ? Color.FromArgb(99, 208, 172) : Color.FromArgb(24, 115, 90);
 
             using (GraphicsPath badgePath = CreateRoundedRectangle(badgeRect, 22))
             {
@@ -107,13 +126,15 @@ namespace HashPDF.WinForms.Controls
         {
             Rectangle titleRect = new Rectangle(48, 194, Width - 96, 42);
             Rectangle hintRect = new Rectangle(68, 242, Width - 136, 72);
+            Color titleColor = useDarkTheme ? Color.FromArgb(235, 242, 239) : Color.FromArgb(26, 34, 32);
+            Color hintColor = useDarkTheme ? Color.FromArgb(173, 186, 181) : Color.FromArgb(97, 108, 104);
 
             TextRenderer.DrawText(
                 graphics,
                 titleText,
                 new Font("Segoe UI Semibold", 15F, FontStyle.Bold, GraphicsUnit.Point, 161),
                 titleRect,
-                Color.FromArgb(26, 34, 32),
+                titleColor,
                 TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.WordBreak);
 
             TextRenderer.DrawText(
@@ -121,7 +142,7 @@ namespace HashPDF.WinForms.Controls
                 hintText,
                 new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 161),
                 hintRect,
-                Color.FromArgb(97, 108, 104),
+                hintColor,
                 TextFormatFlags.HorizontalCenter | TextFormatFlags.Top | TextFormatFlags.WordBreak);
         }
 

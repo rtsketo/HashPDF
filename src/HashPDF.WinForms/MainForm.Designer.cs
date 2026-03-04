@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using HashPDF.WinForms.Controls;
 
 namespace HashPDF.WinForms
 {
@@ -15,11 +14,12 @@ namespace HashPDF.WinForms
         private Panel rightColumn;
         private Label titleLabel;
         private Label subtitleLabel;
+        private CheckBox darkModeCheckBox;
         private Label languageLabel;
         private ComboBox languageComboBox;
         private Label inputTitleLabel;
         private Label inputSubtitleLabel;
-        private DropSurfacePanel dropSurfacePanel;
+        private Panel dropSurfaceHostPanel;
         private Panel resultPanel;
         private Label resultTitleLabel;
         private Label hashCaptionLabel;
@@ -44,30 +44,31 @@ namespace HashPDF.WinForms
 
         private void InitializeComponent()
         {
-            this.components = new Container();
-            this.headerPanel = new Panel();
-            this.languagePanel = new Panel();
-            this.languageLabel = new Label();
-            this.languageComboBox = new ComboBox();
-            this.titleLabel = new Label();
-            this.subtitleLabel = new Label();
-            this.bodyLayout = new TableLayoutPanel();
-            this.leftColumn = new Panel();
-            this.inputTitleLabel = new Label();
-            this.inputSubtitleLabel = new Label();
-            this.dropSurfacePanel = new DropSurfacePanel();
-            this.rightColumn = new Panel();
-            this.resultPanel = new Panel();
-            this.resultTitleLabel = new Label();
-            this.hashCaptionLabel = new Label();
-            this.hashTextBox = new TextBox();
-            this.fileCaptionLabel = CreateSectionLabel(224);
-            this.fileValueLabel = CreateMetaLabel(246);
-            this.outputCaptionLabel = CreateSectionLabel(330);
-            this.outputValueLabel = CreateMetaLabel(352);
-            this.openFolderButton = CreateSecondaryButton();
-            this.openPdfButton = CreatePrimaryButton();
-            this.statusLabel = new Label();
+            this.components = new System.ComponentModel.Container();
+            this.headerPanel = new System.Windows.Forms.Panel();
+            this.languagePanel = new System.Windows.Forms.Panel();
+            this.darkModeCheckBox = new System.Windows.Forms.CheckBox();
+            this.languageLabel = new System.Windows.Forms.Label();
+            this.languageComboBox = new System.Windows.Forms.ComboBox();
+            this.titleLabel = new System.Windows.Forms.Label();
+            this.subtitleLabel = new System.Windows.Forms.Label();
+            this.bodyLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.leftColumn = new System.Windows.Forms.Panel();
+            this.inputTitleLabel = new System.Windows.Forms.Label();
+            this.inputSubtitleLabel = new System.Windows.Forms.Label();
+            this.dropSurfaceHostPanel = new System.Windows.Forms.Panel();
+            this.rightColumn = new System.Windows.Forms.Panel();
+            this.resultPanel = new System.Windows.Forms.Panel();
+            this.resultTitleLabel = new System.Windows.Forms.Label();
+            this.hashCaptionLabel = new System.Windows.Forms.Label();
+            this.hashTextBox = new System.Windows.Forms.TextBox();
+            this.fileCaptionLabel = new System.Windows.Forms.Label();
+            this.fileValueLabel = new System.Windows.Forms.Label();
+            this.outputCaptionLabel = new System.Windows.Forms.Label();
+            this.outputValueLabel = new System.Windows.Forms.Label();
+            this.openFolderButton = new System.Windows.Forms.Button();
+            this.openPdfButton = new System.Windows.Forms.Button();
+            this.statusLabel = new System.Windows.Forms.Label();
             this.headerPanel.SuspendLayout();
             this.languagePanel.SuspendLayout();
             this.bodyLayout.SuspendLayout();
@@ -75,121 +76,158 @@ namespace HashPDF.WinForms
             this.rightColumn.SuspendLayout();
             this.resultPanel.SuspendLayout();
             this.SuspendLayout();
-            //
+            // 
             // headerPanel
-            //
+            // 
             this.headerPanel.Controls.Add(this.languagePanel);
             this.headerPanel.Controls.Add(this.titleLabel);
             this.headerPanel.Controls.Add(this.subtitleLabel);
-            this.headerPanel.Dock = DockStyle.Top;
-            this.headerPanel.Height = 128;
-            this.headerPanel.Padding = new Padding(32, 28, 32, 12);
+            this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.headerPanel.Location = new System.Drawing.Point(0, 0);
             this.headerPanel.Name = "headerPanel";
-            //
+            this.headerPanel.Padding = new System.Windows.Forms.Padding(32, 28, 32, 12);
+            this.headerPanel.Size = new System.Drawing.Size(1180, 128);
+            this.headerPanel.TabIndex = 2;
+            // 
             // languagePanel
-            //
-            this.languagePanel.BackColor = Color.White;
+            // 
+            this.languagePanel.BackColor = System.Drawing.Color.White;
+            this.languagePanel.Controls.Add(this.darkModeCheckBox);
             this.languagePanel.Controls.Add(this.languageLabel);
             this.languagePanel.Controls.Add(this.languageComboBox);
-            this.languagePanel.Dock = DockStyle.Right;
+            this.languagePanel.Dock = System.Windows.Forms.DockStyle.Right;
+            this.languagePanel.Location = new System.Drawing.Point(756, 28);
             this.languagePanel.Name = "languagePanel";
-            this.languagePanel.Paint += new PaintEventHandler(this.ResultPanelPaint);
-            this.languagePanel.Size = new Size(214, 88);
-            //
+            this.languagePanel.Size = new System.Drawing.Size(392, 88);
+            this.languagePanel.TabIndex = 0;
+            this.languagePanel.Paint += new System.Windows.Forms.PaintEventHandler(this.ResultPanelPaint);
+            // 
+            // darkModeCheckBox
+            // 
+            this.darkModeCheckBox.AutoSize = true;
+            this.darkModeCheckBox.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.darkModeCheckBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
+            this.darkModeCheckBox.Location = new System.Drawing.Point(18, 45);
+            this.darkModeCheckBox.Name = "darkModeCheckBox";
+            this.darkModeCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.darkModeCheckBox.TabIndex = 0;
+            this.darkModeCheckBox.UseVisualStyleBackColor = true;
+            this.darkModeCheckBox.CheckedChanged += new System.EventHandler(this.DarkModeCheckBoxCheckedChanged);
+            // 
             // languageLabel
-            //
+            // 
             this.languageLabel.AutoSize = true;
-            this.languageLabel.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 161);
-            this.languageLabel.ForeColor = Color.FromArgb(97, 108, 104);
-            this.languageLabel.Location = new Point(18, 16);
+            this.languageLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.languageLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
+            this.languageLabel.Location = new System.Drawing.Point(196, 16);
             this.languageLabel.Name = "languageLabel";
-            //
+            this.languageLabel.Size = new System.Drawing.Size(0, 15);
+            this.languageLabel.TabIndex = 1;
+            // 
             // languageComboBox
-            //
-            this.languageComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.languageComboBox.FlatStyle = FlatStyle.Flat;
+            // 
+            this.languageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.languageComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.languageComboBox.FormattingEnabled = true;
-            this.languageComboBox.Location = new Point(18, 42);
+            this.languageComboBox.Location = new System.Drawing.Point(196, 42);
             this.languageComboBox.Name = "languageComboBox";
-            this.languageComboBox.Size = new Size(176, 25);
+            this.languageComboBox.Size = new System.Drawing.Size(176, 25);
+            this.languageComboBox.TabIndex = 2;
             this.languageComboBox.SelectedIndexChanged += new System.EventHandler(this.LanguageComboBoxSelectedIndexChanged);
-            //
+            // 
             // titleLabel
-            //
+            // 
             this.titleLabel.AutoSize = true;
-            this.titleLabel.Font = new Font("Segoe UI Semibold", 28F, FontStyle.Bold, GraphicsUnit.Point, 161);
-            this.titleLabel.ForeColor = Color.FromArgb(26, 34, 32);
-            this.titleLabel.Location = new Point(32, 22);
+            this.titleLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 28F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(34)))), ((int)(((byte)(32)))));
+            this.titleLabel.Location = new System.Drawing.Point(29, 16);
             this.titleLabel.Name = "titleLabel";
-            //
+            this.titleLabel.Size = new System.Drawing.Size(0, 51);
+            this.titleLabel.TabIndex = 1;
+            // 
             // subtitleLabel
-            //
-            this.subtitleLabel.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point, 161);
-            this.subtitleLabel.ForeColor = Color.FromArgb(97, 108, 104);
-            this.subtitleLabel.Location = new Point(34, 60);
+            // 
+            this.subtitleLabel.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.subtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
+            this.subtitleLabel.Location = new System.Drawing.Point(34, 70);
             this.subtitleLabel.Name = "subtitleLabel";
-            this.subtitleLabel.Size = new Size(660, 46);
-            //
+            this.subtitleLabel.Size = new System.Drawing.Size(660, 36);
+            this.subtitleLabel.TabIndex = 2;
+            // 
             // bodyLayout
-            //
+            // 
             this.bodyLayout.ColumnCount = 2;
-            this.bodyLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 52F));
-            this.bodyLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 48F));
+            this.bodyLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 52F));
+            this.bodyLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48F));
             this.bodyLayout.Controls.Add(this.leftColumn, 0, 0);
             this.bodyLayout.Controls.Add(this.rightColumn, 1, 0);
-            this.bodyLayout.Dock = DockStyle.Fill;
+            this.bodyLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bodyLayout.Location = new System.Drawing.Point(0, 128);
             this.bodyLayout.Name = "bodyLayout";
-            this.bodyLayout.Padding = new Padding(32, 0, 32, 20);
+            this.bodyLayout.Padding = new System.Windows.Forms.Padding(32, 0, 32, 20);
             this.bodyLayout.RowCount = 1;
-            this.bodyLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            //
+            this.bodyLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.bodyLayout.Size = new System.Drawing.Size(1180, 588);
+            this.bodyLayout.TabIndex = 0;
+            // 
             // leftColumn
-            //
-            this.leftColumn.BackColor = Color.White;
+            // 
+            this.leftColumn.BackColor = System.Drawing.Color.White;
             this.leftColumn.Controls.Add(this.inputTitleLabel);
             this.leftColumn.Controls.Add(this.inputSubtitleLabel);
-            this.leftColumn.Controls.Add(this.dropSurfacePanel);
-            this.leftColumn.Dock = DockStyle.Fill;
-            this.leftColumn.Margin = new Padding(0, 0, 14, 0);
+            this.leftColumn.Controls.Add(this.dropSurfaceHostPanel);
+            this.leftColumn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.leftColumn.Location = new System.Drawing.Point(32, 0);
+            this.leftColumn.Margin = new System.Windows.Forms.Padding(0, 0, 14, 0);
             this.leftColumn.Name = "leftColumn";
-            this.leftColumn.Padding = new Padding(24);
-            this.leftColumn.Paint += new PaintEventHandler(this.ResultPanelPaint);
-            //
+            this.leftColumn.Padding = new System.Windows.Forms.Padding(24);
+            this.leftColumn.Size = new System.Drawing.Size(566, 568);
+            this.leftColumn.TabIndex = 0;
+            this.leftColumn.Paint += new System.Windows.Forms.PaintEventHandler(this.ResultPanelPaint);
+            // 
             // inputTitleLabel
-            //
+            // 
             this.inputTitleLabel.AutoSize = true;
-            this.inputTitleLabel.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold, GraphicsUnit.Point, 161);
-            this.inputTitleLabel.ForeColor = Color.FromArgb(26, 34, 32);
-            this.inputTitleLabel.Location = new Point(24, 24);
+            this.inputTitleLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.inputTitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(34)))), ((int)(((byte)(32)))));
+            this.inputTitleLabel.Location = new System.Drawing.Point(24, 24);
             this.inputTitleLabel.Name = "inputTitleLabel";
-            //
+            this.inputTitleLabel.Size = new System.Drawing.Size(0, 28);
+            this.inputTitleLabel.TabIndex = 0;
+            // 
             // inputSubtitleLabel
-            //
-            this.inputSubtitleLabel.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 161);
-            this.inputSubtitleLabel.ForeColor = Color.FromArgb(97, 108, 104);
-            this.inputSubtitleLabel.Location = new Point(24, 58);
+            // 
+            this.inputSubtitleLabel.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.inputSubtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
+            this.inputSubtitleLabel.Location = new System.Drawing.Point(24, 58);
             this.inputSubtitleLabel.Name = "inputSubtitleLabel";
-            this.inputSubtitleLabel.Size = new Size(470, 42);
-            //
-            // dropSurfacePanel
-            //
-            this.dropSurfacePanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            this.dropSurfacePanel.Location = new Point(24, 118);
-            this.dropSurfacePanel.Name = "dropSurfacePanel";
-            this.dropSurfacePanel.Size = new Size(470, 420);
-            this.dropSurfacePanel.FileDropped += new System.EventHandler<FileDroppedEventArgs>(this.DropSurfacePanelFileDropped);
-            this.dropSurfacePanel.Click += new System.EventHandler(this.DropSurfacePanelClick);
-            //
+            this.inputSubtitleLabel.Size = new System.Drawing.Size(470, 42);
+            this.inputSubtitleLabel.TabIndex = 1;
+            // 
+            // dropSurfaceHostPanel
+            // 
+            this.dropSurfaceHostPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dropSurfaceHostPanel.BackColor = System.Drawing.Color.Transparent;
+            this.dropSurfaceHostPanel.Location = new System.Drawing.Point(27, 133);
+            this.dropSurfaceHostPanel.Name = "dropSurfaceHostPanel";
+            this.dropSurfaceHostPanel.Size = new System.Drawing.Size(512, 408);
+            this.dropSurfaceHostPanel.TabIndex = 2;
+            // 
             // rightColumn
-            //
+            // 
             this.rightColumn.Controls.Add(this.resultPanel);
-            this.rightColumn.Dock = DockStyle.Fill;
-            this.rightColumn.Margin = new Padding(14, 0, 0, 0);
+            this.rightColumn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rightColumn.Location = new System.Drawing.Point(626, 0);
+            this.rightColumn.Margin = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this.rightColumn.Name = "rightColumn";
-            //
+            this.rightColumn.Size = new System.Drawing.Size(522, 568);
+            this.rightColumn.TabIndex = 1;
+            // 
             // resultPanel
-            //
-            this.resultPanel.BackColor = Color.White;
+            // 
+            this.resultPanel.BackColor = System.Drawing.Color.White;
             this.resultPanel.Controls.Add(this.resultTitleLabel);
             this.resultPanel.Controls.Add(this.hashCaptionLabel);
             this.resultPanel.Controls.Add(this.hashTextBox);
@@ -199,99 +237,157 @@ namespace HashPDF.WinForms
             this.resultPanel.Controls.Add(this.outputValueLabel);
             this.resultPanel.Controls.Add(this.openFolderButton);
             this.resultPanel.Controls.Add(this.openPdfButton);
-            this.resultPanel.Dock = DockStyle.Fill;
+            this.resultPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.resultPanel.Location = new System.Drawing.Point(0, 0);
             this.resultPanel.Name = "resultPanel";
-            this.resultPanel.Padding = new Padding(24);
-            this.resultPanel.Paint += new PaintEventHandler(this.ResultPanelPaint);
-            //
+            this.resultPanel.Padding = new System.Windows.Forms.Padding(24);
+            this.resultPanel.Size = new System.Drawing.Size(522, 568);
+            this.resultPanel.TabIndex = 0;
+            this.resultPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.ResultPanelPaint);
+            // 
             // resultTitleLabel
-            //
+            // 
             this.resultTitleLabel.AutoSize = true;
-            this.resultTitleLabel.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold, GraphicsUnit.Point, 161);
-            this.resultTitleLabel.ForeColor = Color.FromArgb(26, 34, 32);
-            this.resultTitleLabel.Location = new Point(24, 24);
+            this.resultTitleLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.resultTitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(34)))), ((int)(((byte)(32)))));
+            this.resultTitleLabel.Location = new System.Drawing.Point(24, 24);
             this.resultTitleLabel.Name = "resultTitleLabel";
-            //
+            this.resultTitleLabel.Size = new System.Drawing.Size(0, 28);
+            this.resultTitleLabel.TabIndex = 0;
+            // 
             // hashCaptionLabel
-            //
+            // 
             this.hashCaptionLabel.AutoSize = true;
-            this.hashCaptionLabel.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 161);
-            this.hashCaptionLabel.ForeColor = Color.FromArgb(97, 108, 104);
-            this.hashCaptionLabel.Location = new Point(24, 62);
+            this.hashCaptionLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.hashCaptionLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
+            this.hashCaptionLabel.Location = new System.Drawing.Point(24, 62);
             this.hashCaptionLabel.Name = "hashCaptionLabel";
-            //
+            this.hashCaptionLabel.Size = new System.Drawing.Size(0, 15);
+            this.hashCaptionLabel.TabIndex = 1;
+            // 
             // hashTextBox
-            //
-            this.hashTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            this.hashTextBox.BackColor = Color.FromArgb(247, 249, 247);
-            this.hashTextBox.BorderStyle = BorderStyle.FixedSingle;
-            this.hashTextBox.Font = new Font("Consolas", 9.5F, FontStyle.Regular, GraphicsUnit.Point, 161);
-            this.hashTextBox.ForeColor = Color.FromArgb(37, 50, 65);
-            this.hashTextBox.Location = new Point(24, 86);
+            // 
+            this.hashTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.hashTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(249)))), ((int)(((byte)(247)))));
+            this.hashTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.hashTextBox.Font = new System.Drawing.Font("Consolas", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.hashTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(50)))), ((int)(((byte)(65)))));
+            this.hashTextBox.Location = new System.Drawing.Point(24, 86);
             this.hashTextBox.Multiline = true;
             this.hashTextBox.Name = "hashTextBox";
             this.hashTextBox.ReadOnly = true;
-            this.hashTextBox.ScrollBars = ScrollBars.Horizontal;
-            this.hashTextBox.Size = new Size(416, 116);
+            this.hashTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
+            this.hashTextBox.Size = new System.Drawing.Size(471, 116);
+            this.hashTextBox.TabIndex = 2;
             this.hashTextBox.WordWrap = false;
-            //
+            // 
             // fileCaptionLabel
-            //
-            this.fileCaptionLabel.Left = 24;
-            //
+            // 
+            this.fileCaptionLabel.AutoSize = true;
+            this.fileCaptionLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.fileCaptionLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
+            this.fileCaptionLabel.Location = new System.Drawing.Point(24, 224);
+            this.fileCaptionLabel.Name = "fileCaptionLabel";
+            this.fileCaptionLabel.Size = new System.Drawing.Size(0, 15);
+            this.fileCaptionLabel.TabIndex = 3;
+            // 
             // fileValueLabel
-            //
-            this.fileValueLabel.Left = 24;
-            //
+            // 
+            this.fileValueLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileValueLabel.AutoEllipsis = true;
+            this.fileValueLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(249)))), ((int)(((byte)(247)))));
+            this.fileValueLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.fileValueLabel.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.fileValueLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(50)))), ((int)(((byte)(65)))));
+            this.fileValueLabel.Location = new System.Drawing.Point(24, 246);
+            this.fileValueLabel.Name = "fileValueLabel";
+            this.fileValueLabel.Padding = new System.Windows.Forms.Padding(10);
+            this.fileValueLabel.Size = new System.Drawing.Size(471, 58);
+            this.fileValueLabel.TabIndex = 4;
+            // 
             // outputCaptionLabel
-            //
-            this.outputCaptionLabel.Left = 24;
-            //
+            // 
+            this.outputCaptionLabel.AutoSize = true;
+            this.outputCaptionLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.outputCaptionLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
+            this.outputCaptionLabel.Location = new System.Drawing.Point(24, 330);
+            this.outputCaptionLabel.Name = "outputCaptionLabel";
+            this.outputCaptionLabel.Size = new System.Drawing.Size(0, 15);
+            this.outputCaptionLabel.TabIndex = 5;
+            // 
             // outputValueLabel
-            //
-            this.outputValueLabel.Left = 24;
-            //
+            // 
+            this.outputValueLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.outputValueLabel.AutoEllipsis = true;
+            this.outputValueLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(249)))), ((int)(((byte)(247)))));
+            this.outputValueLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.outputValueLabel.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.outputValueLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(50)))), ((int)(((byte)(65)))));
+            this.outputValueLabel.Location = new System.Drawing.Point(24, 352);
+            this.outputValueLabel.Name = "outputValueLabel";
+            this.outputValueLabel.Padding = new System.Windows.Forms.Padding(10);
+            this.outputValueLabel.Size = new System.Drawing.Size(471, 58);
+            this.outputValueLabel.TabIndex = 6;
+            // 
             // openFolderButton
-            //
-            this.openFolderButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            // 
+            this.openFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.openFolderButton.BackColor = System.Drawing.Color.White;
             this.openFolderButton.Enabled = false;
-            this.openFolderButton.Location = new Point(24, 426);
+            this.openFolderButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(226)))), ((int)(((byte)(222)))));
+            this.openFolderButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.openFolderButton.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.openFolderButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(50)))), ((int)(((byte)(65)))));
+            this.openFolderButton.Location = new System.Drawing.Point(24, 500);
             this.openFolderButton.Name = "openFolderButton";
-            this.openFolderButton.Size = new Size(168, 44);
+            this.openFolderButton.Size = new System.Drawing.Size(168, 44);
+            this.openFolderButton.TabIndex = 7;
             this.openFolderButton.UseVisualStyleBackColor = false;
             this.openFolderButton.Click += new System.EventHandler(this.OpenFolderButtonClick);
-            //
+            // 
             // openPdfButton
-            //
-            this.openPdfButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            // 
+            this.openPdfButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.openPdfButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(115)))), ((int)(((byte)(90)))));
             this.openPdfButton.Enabled = false;
-            this.openPdfButton.Location = new Point(208, 426);
+            this.openPdfButton.FlatAppearance.BorderSize = 0;
+            this.openPdfButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.openPdfButton.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.openPdfButton.ForeColor = System.Drawing.Color.White;
+            this.openPdfButton.Location = new System.Drawing.Point(208, 500);
             this.openPdfButton.Name = "openPdfButton";
-            this.openPdfButton.Size = new Size(168, 44);
+            this.openPdfButton.Size = new System.Drawing.Size(168, 44);
+            this.openPdfButton.TabIndex = 8;
             this.openPdfButton.UseVisualStyleBackColor = false;
             this.openPdfButton.Click += new System.EventHandler(this.OpenPdfButtonClick);
-            //
+            // 
             // statusLabel
-            //
-            this.statusLabel.Dock = DockStyle.Bottom;
-            this.statusLabel.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular, GraphicsUnit.Point, 161);
-            this.statusLabel.ForeColor = Color.FromArgb(97, 108, 104);
-            this.statusLabel.Height = 44;
+            // 
+            this.statusLabel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.statusLabel.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.statusLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
+            this.statusLabel.Location = new System.Drawing.Point(0, 716);
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Padding = new Padding(32, 0, 32, 12);
-            //
+            this.statusLabel.Padding = new System.Windows.Forms.Padding(32, 0, 32, 12);
+            this.statusLabel.Size = new System.Drawing.Size(1180, 44);
+            this.statusLabel.TabIndex = 1;
+            // 
             // MainForm
-            //
-            this.AutoScaleMode = AutoScaleMode.Font;
-            this.BackColor = Color.FromArgb(243, 245, 241);
-            this.ClientSize = new Size(1180, 760);
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(245)))), ((int)(((byte)(241)))));
+            this.ClientSize = new System.Drawing.Size(1180, 760);
             this.Controls.Add(this.bodyLayout);
             this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.headerPanel);
-            this.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular, GraphicsUnit.Point, 161);
-            this.MinimumSize = new Size(1040, 680);
+            this.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.MinimumSize = new System.Drawing.Size(1040, 680);
             this.Name = "MainForm";
-            this.StartPosition = FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "HashPDF";
             this.headerPanel.ResumeLayout(false);
             this.headerPanel.PerformLayout();
@@ -304,6 +400,7 @@ namespace HashPDF.WinForms
             this.resultPanel.ResumeLayout(false);
             this.resultPanel.PerformLayout();
             this.ResumeLayout(false);
+
         }
     }
 }
