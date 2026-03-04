@@ -15,6 +15,10 @@ namespace HashPDF.WinForms
     public partial class MainForm : Form
     {
         private readonly BackgroundWorker worker;
+        private static readonly string PreferencesDirectoryPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "HashPDF");
+        private static readonly string PreferencesFilePath = Path.Combine(PreferencesDirectoryPath, "ui-preferences.ini");
         private DropSurfacePanel dropSurfacePanel;
         private AppLanguage currentLanguage;
         private AppTheme currentTheme;
@@ -33,8 +37,7 @@ namespace HashPDF.WinForms
             worker.DoWork += WorkerDoWork;
             worker.RunWorkerCompleted += WorkerRunWorkerCompleted;
 
-            currentLanguage = AppLanguage.Greek;
-            currentTheme = AppTheme.Light;
+            LoadUserPreferences();
             ApplyLanguage();
             ApplyTheme();
         }
@@ -216,6 +219,130 @@ namespace HashPDF.WinForms
             resultPanel.Invalidate();
         }
 
+        private void LoadUserPreferences()
+        {
+            currentLanguage = AppLanguage.Greek;
+            currentTheme = AppTheme.Dark;
+
+            try
+            {
+                if (!File.Exists(PreferencesFilePath))
+                {
+                    return;
+                }
+
+                string[] lines = File.ReadAllLines(PreferencesFilePath);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i];
+                    if (string.IsNullOrWhiteSpace(line))
+                    {
+                        continue;
+                    }
+
+                    string trimmedLine = line.Trim();
+                    if (trimmedLine.StartsWith("#"))
+                    {
+                        continue;
+                    }
+
+                    int separatorIndex = trimmedLine.IndexOf('=');
+                    if (separatorIndex <= 0 || separatorIndex >= trimmedLine.Length - 1)
+                    {
+                        continue;
+                    }
+
+                    string key = trimmedLine.Substring(0, separatorIndex).Trim();
+                    string value = trimmedLine.Substring(separatorIndex + 1).Trim();
+                    if (key.Equals("language", StringComparison.OrdinalIgnoreCase))
+                    {
+                        AppLanguage parsedLanguage;
+                        if (TryParseLanguage(value, out parsedLanguage))
+                        {
+                            currentLanguage = parsedLanguage;
+                        }
+                    }
+                    else if (key.Equals("theme", StringComparison.OrdinalIgnoreCase))
+                    {
+                        AppTheme parsedTheme;
+                        if (TryParseTheme(value, out parsedTheme))
+                        {
+                            currentTheme = parsedTheme;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                currentLanguage = AppLanguage.Greek;
+                currentTheme = AppTheme.Dark;
+            }
+        }
+
+        private void SaveUserPreferences()
+        {
+            try
+            {
+                Directory.CreateDirectory(PreferencesDirectoryPath);
+                string content = string.Format(
+                    "language={0}{2}theme={1}{2}",
+                    SerializeLanguage(currentLanguage),
+                    SerializeTheme(currentTheme),
+                    Environment.NewLine);
+                File.WriteAllText(PreferencesFilePath, content);
+            }
+            catch
+            {
+                // Ignore preference write failures.
+            }
+        }
+
+        private static bool TryParseLanguage(string value, out AppLanguage language)
+        {
+            if (value.Equals("greek", StringComparison.OrdinalIgnoreCase))
+            {
+                language = AppLanguage.Greek;
+                return true;
+            }
+
+            if (value.Equals("english", StringComparison.OrdinalIgnoreCase))
+            {
+                language = AppLanguage.English;
+                return true;
+            }
+
+            language = AppLanguage.Greek;
+            return false;
+        }
+
+        private static bool TryParseTheme(string value, out AppTheme theme)
+        {
+            if (value.Equals("dark", StringComparison.OrdinalIgnoreCase))
+            {
+                theme = AppTheme.Dark;
+                return true;
+            }
+
+            if (value.Equals("light", StringComparison.OrdinalIgnoreCase))
+            {
+                theme = AppTheme.Light;
+                return true;
+            }
+
+            theme = AppTheme.Dark;
+            return false;
+        }
+
+        private static string SerializeLanguage(AppLanguage language)
+        {
+            return language == AppLanguage.English ? "english" : "greek";
+        }
+
+        private static string SerializeTheme(AppTheme theme)
+        {
+            return theme == AppTheme.Light ? "light" : "dark";
+        }
+
         private void RefreshVisibleState()
         {
             if (worker.IsBusy)
@@ -285,6 +412,7 @@ namespace HashPDF.WinForms
 
             currentLanguage = item.Language;
             ApplyLanguage();
+            SaveUserPreferences();
         }
 
         private void ThemeComboBoxSelectedIndexChanged(object sender, EventArgs e)
@@ -302,6 +430,7 @@ namespace HashPDF.WinForms
 
             currentTheme = item.Theme;
             ApplyTheme();
+            SaveUserPreferences();
         }
 
         private void DropSurfacePanelClick(object sender, EventArgs e)
