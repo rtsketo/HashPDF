@@ -99,9 +99,9 @@ namespace HashPDF.WinForms
             this.languagePanel.Controls.Add(this.languageLabel);
             this.languagePanel.Controls.Add(this.languageComboBox);
             this.languagePanel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.languagePanel.Location = new System.Drawing.Point(720, 28);
+            this.languagePanel.Location = new System.Drawing.Point(729, 28);
             this.languagePanel.Name = "languagePanel";
-            this.languagePanel.Size = new System.Drawing.Size(428, 88);
+            this.languagePanel.Size = new System.Drawing.Size(419, 88);
             this.languagePanel.TabIndex = 0;
             this.languagePanel.Paint += new System.Windows.Forms.PaintEventHandler(this.ResultPanelPaint);
             // 
@@ -114,15 +114,19 @@ namespace HashPDF.WinForms
             this.themeLabel.Name = "themeLabel";
             this.themeLabel.Size = new System.Drawing.Size(0, 15);
             this.themeLabel.TabIndex = 0;
+            this.themeLabel.Text = "Theme";
             // 
             // themeComboBox
             // 
             this.themeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.themeComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.themeComboBox.FormattingEnabled = true;
-            this.themeComboBox.Location = new System.Drawing.Point(18, 42);
+            this.themeComboBox.Items.AddRange(new object[] {
+            "Dark",
+            "Light"});
+            this.themeComboBox.Location = new System.Drawing.Point(70, 42);
             this.themeComboBox.Name = "themeComboBox";
-            this.themeComboBox.Size = new System.Drawing.Size(176, 25);
+            this.themeComboBox.Size = new System.Drawing.Size(124, 25);
             this.themeComboBox.TabIndex = 1;
             this.themeComboBox.SelectedIndexChanged += new System.EventHandler(this.ThemeComboBoxSelectedIndexChanged);
             // 
@@ -135,12 +139,16 @@ namespace HashPDF.WinForms
             this.languageLabel.Name = "languageLabel";
             this.languageLabel.Size = new System.Drawing.Size(0, 15);
             this.languageLabel.TabIndex = 2;
+            this.languageLabel.Text = "Language";
             // 
             // languageComboBox
             // 
             this.languageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.languageComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.languageComboBox.FormattingEnabled = true;
+            this.languageComboBox.Items.AddRange(new object[] {
+            "Ελληνικά",
+            "English"});
             this.languageComboBox.Location = new System.Drawing.Point(232, 42);
             this.languageComboBox.Name = "languageComboBox";
             this.languageComboBox.Size = new System.Drawing.Size(176, 25);
@@ -156,6 +164,7 @@ namespace HashPDF.WinForms
             this.titleLabel.Name = "titleLabel";
             this.titleLabel.Size = new System.Drawing.Size(0, 51);
             this.titleLabel.TabIndex = 1;
+            this.titleLabel.Text = "HashPDF";
             // 
             // subtitleLabel
             // 
@@ -165,6 +174,7 @@ namespace HashPDF.WinForms
             this.subtitleLabel.Name = "subtitleLabel";
             this.subtitleLabel.Size = new System.Drawing.Size(660, 36);
             this.subtitleLabel.TabIndex = 2;
+            this.subtitleLabel.Text = "Create a SHA-512 hash and a PDF proof in the same folder.";
             // 
             // bodyLayout
             // 
@@ -206,6 +216,7 @@ namespace HashPDF.WinForms
             this.inputTitleLabel.Name = "inputTitleLabel";
             this.inputTitleLabel.Size = new System.Drawing.Size(0, 28);
             this.inputTitleLabel.TabIndex = 0;
+            this.inputTitleLabel.Text = "Select File";
             // 
             // inputSubtitleLabel
             // 
@@ -215,6 +226,7 @@ namespace HashPDF.WinForms
             this.inputSubtitleLabel.Name = "inputSubtitleLabel";
             this.inputSubtitleLabel.Size = new System.Drawing.Size(470, 42);
             this.inputSubtitleLabel.TabIndex = 1;
+            this.inputSubtitleLabel.Text = "Drop a file into the panel or click the drop area to choose one.";
             // 
             // dropSurfaceHostPanel
             // 
@@ -266,6 +278,7 @@ namespace HashPDF.WinForms
             this.resultTitleLabel.Name = "resultTitleLabel";
             this.resultTitleLabel.Size = new System.Drawing.Size(0, 28);
             this.resultTitleLabel.TabIndex = 0;
+            this.resultTitleLabel.Text = "Hash Result";
             // 
             // hashCaptionLabel
             // 
@@ -276,6 +289,7 @@ namespace HashPDF.WinForms
             this.hashCaptionLabel.Name = "hashCaptionLabel";
             this.hashCaptionLabel.Size = new System.Drawing.Size(0, 15);
             this.hashCaptionLabel.TabIndex = 1;
+            this.hashCaptionLabel.Text = "SHA-512 Hash";
             // 
             // hashTextBox
             // 
@@ -289,10 +303,10 @@ namespace HashPDF.WinForms
             this.hashTextBox.Multiline = true;
             this.hashTextBox.Name = "hashTextBox";
             this.hashTextBox.ReadOnly = true;
-            this.hashTextBox.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.hashTextBox.Size = new System.Drawing.Size(471, 116);
             this.hashTextBox.TabIndex = 2;
-            this.hashTextBox.WordWrap = true;
+            this.hashTextBox.Text = "3A5902E0D4E5A9F9C5B8B08D6D6E65A5F632D34816F0C21213E88A53FD7A17764CC99E2AA2CC9334A95" +
+    "7F0E91E95EAC34F6079F57390E2D1F2F7B669FC0A4B71";
             // 
             // fileCaptionLabel
             // 
@@ -303,6 +317,7 @@ namespace HashPDF.WinForms
             this.fileCaptionLabel.Name = "fileCaptionLabel";
             this.fileCaptionLabel.Size = new System.Drawing.Size(0, 15);
             this.fileCaptionLabel.TabIndex = 3;
+            this.fileCaptionLabel.Text = "Source File";
             // 
             // fileValueLabel
             // 
@@ -318,6 +333,7 @@ namespace HashPDF.WinForms
             this.fileValueLabel.Padding = new System.Windows.Forms.Padding(10);
             this.fileValueLabel.Size = new System.Drawing.Size(471, 58);
             this.fileValueLabel.TabIndex = 4;
+            this.fileValueLabel.Text = "C:\\Samples\\topographic_plan.dxf";
             // 
             // outputCaptionLabel
             // 
@@ -328,6 +344,7 @@ namespace HashPDF.WinForms
             this.outputCaptionLabel.Name = "outputCaptionLabel";
             this.outputCaptionLabel.Size = new System.Drawing.Size(0, 15);
             this.outputCaptionLabel.TabIndex = 5;
+            this.outputCaptionLabel.Text = "Generated PDF";
             // 
             // outputValueLabel
             // 
@@ -343,6 +360,7 @@ namespace HashPDF.WinForms
             this.outputValueLabel.Padding = new System.Windows.Forms.Padding(10);
             this.outputValueLabel.Size = new System.Drawing.Size(471, 58);
             this.outputValueLabel.TabIndex = 6;
+            this.outputValueLabel.Text = "C:\\Samples\\topographic_plan.hash.pdf";
             // 
             // openFolderButton
             // 
@@ -357,6 +375,7 @@ namespace HashPDF.WinForms
             this.openFolderButton.Name = "openFolderButton";
             this.openFolderButton.Size = new System.Drawing.Size(168, 44);
             this.openFolderButton.TabIndex = 7;
+            this.openFolderButton.Text = "Open Folder";
             this.openFolderButton.UseVisualStyleBackColor = false;
             this.openFolderButton.Click += new System.EventHandler(this.OpenFolderButtonClick);
             // 
@@ -373,6 +392,7 @@ namespace HashPDF.WinForms
             this.openPdfButton.Name = "openPdfButton";
             this.openPdfButton.Size = new System.Drawing.Size(168, 44);
             this.openPdfButton.TabIndex = 8;
+            this.openPdfButton.Text = "Open PDF";
             this.openPdfButton.UseVisualStyleBackColor = false;
             this.openPdfButton.Click += new System.EventHandler(this.OpenPdfButtonClick);
             // 
@@ -386,6 +406,7 @@ namespace HashPDF.WinForms
             this.statusLabel.Padding = new System.Windows.Forms.Padding(32, 0, 32, 12);
             this.statusLabel.Size = new System.Drawing.Size(1180, 44);
             this.statusLabel.TabIndex = 1;
+            this.statusLabel.Text = "Ready for a new file.";
             // 
             // MainForm
             // 
