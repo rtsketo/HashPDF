@@ -14,7 +14,8 @@ namespace HashPDF.WinForms
         private Panel rightColumn;
         private Label titleLabel;
         private Label subtitleLabel;
-        private CheckBox darkModeCheckBox;
+        private Label themeLabel;
+        private ComboBox themeComboBox;
         private Label languageLabel;
         private ComboBox languageComboBox;
         private Label inputTitleLabel;
@@ -47,7 +48,8 @@ namespace HashPDF.WinForms
             this.components = new System.ComponentModel.Container();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.languagePanel = new System.Windows.Forms.Panel();
-            this.darkModeCheckBox = new System.Windows.Forms.CheckBox();
+            this.themeLabel = new System.Windows.Forms.Label();
+            this.themeComboBox = new System.Windows.Forms.ComboBox();
             this.languageLabel = new System.Windows.Forms.Label();
             this.languageComboBox = new System.Windows.Forms.ComboBox();
             this.titleLabel = new System.Windows.Forms.Label();
@@ -92,47 +94,57 @@ namespace HashPDF.WinForms
             // languagePanel
             // 
             this.languagePanel.BackColor = System.Drawing.Color.White;
-            this.languagePanel.Controls.Add(this.darkModeCheckBox);
+            this.languagePanel.Controls.Add(this.themeLabel);
+            this.languagePanel.Controls.Add(this.themeComboBox);
             this.languagePanel.Controls.Add(this.languageLabel);
             this.languagePanel.Controls.Add(this.languageComboBox);
             this.languagePanel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.languagePanel.Location = new System.Drawing.Point(756, 28);
+            this.languagePanel.Location = new System.Drawing.Point(720, 28);
             this.languagePanel.Name = "languagePanel";
-            this.languagePanel.Size = new System.Drawing.Size(392, 88);
+            this.languagePanel.Size = new System.Drawing.Size(428, 88);
             this.languagePanel.TabIndex = 0;
             this.languagePanel.Paint += new System.Windows.Forms.PaintEventHandler(this.ResultPanelPaint);
             // 
-            // darkModeCheckBox
+            // themeLabel
             // 
-            this.darkModeCheckBox.AutoSize = true;
-            this.darkModeCheckBox.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
-            this.darkModeCheckBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
-            this.darkModeCheckBox.Location = new System.Drawing.Point(18, 45);
-            this.darkModeCheckBox.Name = "darkModeCheckBox";
-            this.darkModeCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.darkModeCheckBox.TabIndex = 0;
-            this.darkModeCheckBox.UseVisualStyleBackColor = true;
-            this.darkModeCheckBox.CheckedChanged += new System.EventHandler(this.DarkModeCheckBoxCheckedChanged);
+            this.themeLabel.AutoSize = true;
+            this.themeLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.themeLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
+            this.themeLabel.Location = new System.Drawing.Point(18, 16);
+            this.themeLabel.Name = "themeLabel";
+            this.themeLabel.Size = new System.Drawing.Size(0, 15);
+            this.themeLabel.TabIndex = 0;
+            // 
+            // themeComboBox
+            // 
+            this.themeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.themeComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.themeComboBox.FormattingEnabled = true;
+            this.themeComboBox.Location = new System.Drawing.Point(18, 42);
+            this.themeComboBox.Name = "themeComboBox";
+            this.themeComboBox.Size = new System.Drawing.Size(176, 25);
+            this.themeComboBox.TabIndex = 1;
+            this.themeComboBox.SelectedIndexChanged += new System.EventHandler(this.ThemeComboBoxSelectedIndexChanged);
             // 
             // languageLabel
             // 
             this.languageLabel.AutoSize = true;
             this.languageLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
             this.languageLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
-            this.languageLabel.Location = new System.Drawing.Point(196, 16);
+            this.languageLabel.Location = new System.Drawing.Point(232, 16);
             this.languageLabel.Name = "languageLabel";
             this.languageLabel.Size = new System.Drawing.Size(0, 15);
-            this.languageLabel.TabIndex = 1;
+            this.languageLabel.TabIndex = 2;
             // 
             // languageComboBox
             // 
             this.languageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.languageComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.languageComboBox.FormattingEnabled = true;
-            this.languageComboBox.Location = new System.Drawing.Point(196, 42);
+            this.languageComboBox.Location = new System.Drawing.Point(232, 42);
             this.languageComboBox.Name = "languageComboBox";
             this.languageComboBox.Size = new System.Drawing.Size(176, 25);
-            this.languageComboBox.TabIndex = 2;
+            this.languageComboBox.TabIndex = 3;
             this.languageComboBox.SelectedIndexChanged += new System.EventHandler(this.LanguageComboBoxSelectedIndexChanged);
             // 
             // titleLabel

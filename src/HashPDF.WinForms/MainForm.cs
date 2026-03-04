@@ -113,11 +113,19 @@ namespace HashPDF.WinForms
             languageComboBox.SelectedIndex = currentLanguage == AppLanguage.Greek ? 0 : 1;
         }
 
+        private void RefreshThemeOptions()
+        {
+            themeComboBox.Items.Clear();
+            themeComboBox.Items.Add(new ThemeItem(AppTheme.Light, TextCatalog.Get(currentLanguage, "ThemeLight")));
+            themeComboBox.Items.Add(new ThemeItem(AppTheme.Dark, TextCatalog.Get(currentLanguage, "ThemeDark")));
+            themeComboBox.SelectedIndex = currentTheme == AppTheme.Light ? 0 : 1;
+        }
+
         private void ApplyLanguage()
         {
             titleLabel.Text = TextCatalog.Get(currentLanguage, "HeaderTitle");
             subtitleLabel.Text = TextCatalog.Get(currentLanguage, "HeaderSubtitle");
-            darkModeCheckBox.Text = TextCatalog.Get(currentLanguage, "DarkModeToggle");
+            themeLabel.Text = TextCatalog.Get(currentLanguage, "ThemeLabel");
             languageLabel.Text = TextCatalog.Get(currentLanguage, "LanguageLabel");
             inputTitleLabel.Text = TextCatalog.Get(currentLanguage, "InputTitle");
             inputSubtitleLabel.Text = TextCatalog.Get(currentLanguage, "InputSubtitle");
@@ -132,7 +140,7 @@ namespace HashPDF.WinForms
             suppressOptionEvents = true;
             try
             {
-                darkModeCheckBox.Checked = currentTheme == AppTheme.Dark;
+                RefreshThemeOptions();
                 RefreshLanguageOptions();
             }
             finally
@@ -178,7 +186,7 @@ namespace HashPDF.WinForms
             hashCaptionLabel.ForeColor = mutedText;
             fileCaptionLabel.ForeColor = mutedText;
             outputCaptionLabel.ForeColor = mutedText;
-            darkModeCheckBox.ForeColor = mutedText;
+            themeLabel.ForeColor = mutedText;
             languageLabel.ForeColor = mutedText;
             statusLabel.ForeColor = mutedText;
 
@@ -188,11 +196,13 @@ namespace HashPDF.WinForms
             fileValueLabel.ForeColor = bodyText;
             outputValueLabel.BackColor = fieldBackground;
             outputValueLabel.ForeColor = bodyText;
+            themeComboBox.BackColor = comboBackground;
+            themeComboBox.ForeColor = bodyText;
             languageComboBox.BackColor = comboBackground;
             languageComboBox.ForeColor = bodyText;
 
             openFolderButton.BackColor = panelBackground;
-            openFolderButton.ForeColor = bodyText;
+            openFolderButton.ForeColor = dark ? Color.White : bodyText;
             openFolderButton.FlatAppearance.BorderColor = secondaryBorder;
 
             openPdfButton.BackColor = primaryButton;
@@ -277,20 +287,20 @@ namespace HashPDF.WinForms
             ApplyLanguage();
         }
 
-        private void DarkModeCheckBoxCheckedChanged(object sender, EventArgs e)
+        private void ThemeComboBoxSelectedIndexChanged(object sender, EventArgs e)
         {
             if (suppressOptionEvents)
             {
                 return;
             }
 
-            AppTheme selectedTheme = darkModeCheckBox.Checked ? AppTheme.Dark : AppTheme.Light;
-            if (selectedTheme == currentTheme)
+            ThemeItem item = themeComboBox.SelectedItem as ThemeItem;
+            if (item == null || item.Theme == currentTheme)
             {
                 return;
             }
 
-            currentTheme = selectedTheme;
+            currentTheme = item.Theme;
             ApplyTheme();
         }
 
@@ -438,6 +448,24 @@ namespace HashPDF.WinForms
             }
 
             public AppLanguage Language { get; private set; }
+
+            public string Label { get; private set; }
+
+            public override string ToString()
+            {
+                return Label;
+            }
+        }
+
+        private sealed class ThemeItem
+        {
+            public ThemeItem(AppTheme theme, string label)
+            {
+                Theme = theme;
+                Label = label;
+            }
+
+            public AppTheme Theme { get; private set; }
 
             public string Label { get; private set; }
 
