@@ -37,6 +37,9 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\DropSurfacePanel.cs" />
+    <Compile Include="Localization\AppLanguage.cs" />
+    <Compile Include="Localization\TextCatalog.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="MainForm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
