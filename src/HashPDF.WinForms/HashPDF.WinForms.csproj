@@ -45,6 +45,11 @@
     <None Include="Assets\HashPDF.ico" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Controls\DropSurfacePanel.cs" />
     <Compile Include="Exceptions\HashPdfException.cs" />
     <Compile Include="Localization\AppLanguage.cs" />
@@ -53,7 +58,12 @@
     <Compile Include="Program.cs" />
     <Compile Include="Services\HashPdfService.cs" />
     <Compile Include="Services\PdfDocumentWriter.cs" />
-    <Compile Include="MainForm.cs" />
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
