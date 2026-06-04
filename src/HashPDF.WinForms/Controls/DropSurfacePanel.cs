@@ -9,6 +9,7 @@ namespace HashPDF.WinForms.Controls
     {
         private bool isDragActive;
         private bool useDarkTheme;
+        private bool hasLoadedFile;
         private string titleText;
         private string hintText;
 
@@ -59,6 +60,16 @@ namespace HashPDF.WinForms.Controls
             }
         }
 
+        public bool HasLoadedFile
+        {
+            get { return hasLoadedFile; }
+            set
+            {
+                hasLoadedFile = value;
+                Invalidate();
+            }
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
@@ -97,10 +108,10 @@ namespace HashPDF.WinForms.Controls
 
         private void DrawIcon(Graphics graphics)
         {
-            Rectangle badgeRect = new Rectangle((Width / 2) - 42, 84, 84, 84);
+            Rectangle badgeRect = new Rectangle((Width / 2) - 42, GetContentTop(), 84, 84);
             Color badgeColor = useDarkTheme
-                ? (isDragActive ? Color.FromArgb(58, 88, 79) : Color.FromArgb(53, 66, 72))
-                : (isDragActive ? Color.FromArgb(217, 241, 233) : Color.FromArgb(231, 241, 237));
+                ? (isDragActive || hasLoadedFile ? Color.FromArgb(58, 88, 79) : Color.FromArgb(53, 66, 72))
+                : (isDragActive || hasLoadedFile ? Color.FromArgb(217, 241, 233) : Color.FromArgb(231, 241, 237));
             Color strokeColor = useDarkTheme ? Color.FromArgb(99, 208, 172) : Color.FromArgb(24, 115, 90);
 
             using (GraphicsPath badgePath = CreateRoundedRectangle(badgeRect, 22))
@@ -113,19 +124,30 @@ namespace HashPDF.WinForms.Controls
 
             using (Pen pen = new Pen(strokeColor, 3F))
             {
-                graphics.DrawRectangle(pen, (Width / 2) - 20, 100, 40, 50);
-                graphics.DrawLine(pen, (Width / 2) + 4, 100, (Width / 2) + 20, 116);
-                graphics.DrawLine(pen, (Width / 2) + 4, 100, (Width / 2) + 4, 116);
-                graphics.DrawLine(pen, (Width / 2) + 4, 116, (Width / 2) + 20, 116);
-                graphics.DrawLine(pen, (Width / 2) - 10, 124, (Width / 2) + 10, 124);
-                graphics.DrawLine(pen, (Width / 2) - 10, 136, (Width / 2) + 10, 136);
+                int iconTop = badgeRect.Top + 16;
+                graphics.DrawRectangle(pen, (Width / 2) - 20, iconTop, 40, 50);
+                graphics.DrawLine(pen, (Width / 2) + 4, iconTop, (Width / 2) + 20, iconTop + 16);
+                graphics.DrawLine(pen, (Width / 2) + 4, iconTop, (Width / 2) + 4, iconTop + 16);
+                graphics.DrawLine(pen, (Width / 2) + 4, iconTop + 16, (Width / 2) + 20, iconTop + 16);
+                if (hasLoadedFile)
+                {
+                    graphics.DrawLine(pen, (Width / 2) - 11, iconTop + 31, (Width / 2) - 1, iconTop + 41);
+                    graphics.DrawLine(pen, (Width / 2) - 1, iconTop + 41, (Width / 2) + 13, iconTop + 23);
+                }
+                else
+                {
+                    graphics.DrawLine(pen, (Width / 2) - 10, iconTop + 24, (Width / 2) + 10, iconTop + 24);
+                    graphics.DrawLine(pen, (Width / 2) - 10, iconTop + 36, (Width / 2) + 10, iconTop + 36);
+                }
             }
         }
 
         private void DrawText(Graphics graphics)
         {
-            Rectangle titleRect = new Rectangle(48, 194, Width - 96, 42);
-            Rectangle hintRect = new Rectangle(68, 242, Width - 136, 72);
+            int titleTop = GetContentTop() + 108;
+            int hintTop = titleTop + 46;
+            Rectangle titleRect = new Rectangle(48, titleTop, Width - 96, 42);
+            Rectangle hintRect = new Rectangle(68, hintTop, Width - 136, Math.Max(54, Height - hintTop - 18));
             Color titleColor = useDarkTheme ? Color.FromArgb(235, 242, 239) : Color.FromArgb(26, 34, 32);
             Color hintColor = useDarkTheme ? Color.FromArgb(173, 186, 181) : Color.FromArgb(97, 108, 104);
 
@@ -144,6 +166,11 @@ namespace HashPDF.WinForms.Controls
                 hintRect,
                 hintColor,
                 TextFormatFlags.HorizontalCenter | TextFormatFlags.Top | TextFormatFlags.WordBreak);
+        }
+
+        private int GetContentTop()
+        {
+            return Math.Max(28, (Height / 2) - 122);
         }
 
         private void OnDragEnterInternal(object sender, DragEventArgs e)

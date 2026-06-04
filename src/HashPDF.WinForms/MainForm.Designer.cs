@@ -20,6 +20,10 @@ namespace HashPDF.WinForms
         private ComboBox languageComboBox;
         private Label inputTitleLabel;
         private Label inputSubtitleLabel;
+        private Label dxfToolsTitleLabel;
+        private Label dxfToolsDescriptionLabel;
+        private Button convertDxfKaekButton;
+        private Button convertDxfAllButton;
         private Panel dropSurfaceHostPanel;
         private Panel resultPanel;
         private Label resultTitleLabel;
@@ -58,6 +62,10 @@ namespace HashPDF.WinForms
             this.leftColumn = new System.Windows.Forms.Panel();
             this.inputTitleLabel = new System.Windows.Forms.Label();
             this.inputSubtitleLabel = new System.Windows.Forms.Label();
+            this.dxfToolsTitleLabel = new System.Windows.Forms.Label();
+            this.dxfToolsDescriptionLabel = new System.Windows.Forms.Label();
+            this.convertDxfKaekButton = new System.Windows.Forms.Button();
+            this.convertDxfAllButton = new System.Windows.Forms.Button();
             this.dropSurfaceHostPanel = new System.Windows.Forms.Panel();
             this.rightColumn = new System.Windows.Forms.Panel();
             this.resultPanel = new System.Windows.Forms.Panel();
@@ -198,6 +206,10 @@ namespace HashPDF.WinForms
             this.leftColumn.Controls.Add(this.inputTitleLabel);
             this.leftColumn.Controls.Add(this.inputSubtitleLabel);
             this.leftColumn.Controls.Add(this.dropSurfaceHostPanel);
+            this.leftColumn.Controls.Add(this.dxfToolsTitleLabel);
+            this.leftColumn.Controls.Add(this.dxfToolsDescriptionLabel);
+            this.leftColumn.Controls.Add(this.convertDxfKaekButton);
+            this.leftColumn.Controls.Add(this.convertDxfAllButton);
             this.leftColumn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.leftColumn.Location = new System.Drawing.Point(32, 0);
             this.leftColumn.Margin = new System.Windows.Forms.Padding(0, 0, 14, 0);
@@ -230,14 +242,68 @@ namespace HashPDF.WinForms
             // 
             // dropSurfaceHostPanel
             // 
-            this.dropSurfaceHostPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.dropSurfaceHostPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dropSurfaceHostPanel.BackColor = System.Drawing.Color.Transparent;
-            this.dropSurfaceHostPanel.Location = new System.Drawing.Point(27, 133);
+            this.dropSurfaceHostPanel.Location = new System.Drawing.Point(27, 118);
             this.dropSurfaceHostPanel.Name = "dropSurfaceHostPanel";
-            this.dropSurfaceHostPanel.Size = new System.Drawing.Size(512, 408);
-            this.dropSurfaceHostPanel.TabIndex = 2;
+            this.dropSurfaceHostPanel.Size = new System.Drawing.Size(512, 426);
+            this.dropSurfaceHostPanel.TabIndex = 3;
+            // 
+            // dxfToolsTitleLabel
+            // 
+            this.dxfToolsTitleLabel.AutoSize = true;
+            this.dxfToolsTitleLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.dxfToolsTitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(34)))), ((int)(((byte)(32)))));
+            this.dxfToolsTitleLabel.Location = new System.Drawing.Point(27, 438);
+            this.dxfToolsTitleLabel.Name = "dxfToolsTitleLabel";
+            this.dxfToolsTitleLabel.Size = new System.Drawing.Size(95, 19);
+            this.dxfToolsTitleLabel.TabIndex = 5;
+            this.dxfToolsTitleLabel.Text = "DXF Text Tools";
+            // 
+            // dxfToolsDescriptionLabel
+            // 
+            this.dxfToolsDescriptionLabel.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.dxfToolsDescriptionLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(108)))), ((int)(((byte)(104)))));
+            this.dxfToolsDescriptionLabel.Location = new System.Drawing.Point(27, 461);
+            this.dxfToolsDescriptionLabel.Name = "dxfToolsDescriptionLabel";
+            this.dxfToolsDescriptionLabel.Size = new System.Drawing.Size(512, 24);
+            this.dxfToolsDescriptionLabel.TabIndex = 6;
+            this.dxfToolsDescriptionLabel.Text = "Convert MTEXT in the loaded DXF without changing the original file.";
+            // 
+            // convertDxfKaekButton
+            // 
+            this.convertDxfKaekButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.convertDxfKaekButton.BackColor = System.Drawing.Color.White;
+            this.convertDxfKaekButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.convertDxfKaekButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(226)))), ((int)(((byte)(222)))));
+            this.convertDxfKaekButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.convertDxfKaekButton.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.convertDxfKaekButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(50)))), ((int)(((byte)(65)))));
+            this.convertDxfKaekButton.Location = new System.Drawing.Point(27, 497);
+            this.convertDxfKaekButton.Name = "convertDxfKaekButton";
+            this.convertDxfKaekButton.Size = new System.Drawing.Size(248, 44);
+            this.convertDxfKaekButton.TabIndex = 2;
+            this.convertDxfKaekButton.Text = "Convert PST_KAEK";
+            this.convertDxfKaekButton.UseVisualStyleBackColor = false;
+            this.convertDxfKaekButton.Click += new System.EventHandler(this.ConvertDxfKaekButtonClick);
+            // 
+            // convertDxfAllButton
+            // 
+            this.convertDxfAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.convertDxfAllButton.BackColor = System.Drawing.Color.White;
+            this.convertDxfAllButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.convertDxfAllButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(226)))), ((int)(((byte)(222)))));
+            this.convertDxfAllButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.convertDxfAllButton.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.convertDxfAllButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(50)))), ((int)(((byte)(65)))));
+            this.convertDxfAllButton.Location = new System.Drawing.Point(291, 497);
+            this.convertDxfAllButton.Name = "convertDxfAllButton";
+            this.convertDxfAllButton.Size = new System.Drawing.Size(248, 44);
+            this.convertDxfAllButton.TabIndex = 4;
+            this.convertDxfAllButton.Text = "Convert All";
+            this.convertDxfAllButton.UseVisualStyleBackColor = false;
+            this.convertDxfAllButton.Click += new System.EventHandler(this.ConvertDxfAllButtonClick);
             // 
             // rightColumn
             // 
@@ -364,14 +430,14 @@ namespace HashPDF.WinForms
             // 
             // openFolderButton
             // 
-            this.openFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.openFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.openFolderButton.BackColor = System.Drawing.Color.White;
             this.openFolderButton.Enabled = false;
             this.openFolderButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(226)))), ((int)(((byte)(222)))));
             this.openFolderButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.openFolderButton.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
             this.openFolderButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(50)))), ((int)(((byte)(65)))));
-            this.openFolderButton.Location = new System.Drawing.Point(24, 500);
+            this.openFolderButton.Location = new System.Drawing.Point(146, 500);
             this.openFolderButton.Name = "openFolderButton";
             this.openFolderButton.Size = new System.Drawing.Size(168, 44);
             this.openFolderButton.TabIndex = 7;
@@ -381,14 +447,14 @@ namespace HashPDF.WinForms
             // 
             // openPdfButton
             // 
-            this.openPdfButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.openPdfButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.openPdfButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(115)))), ((int)(((byte)(90)))));
             this.openPdfButton.Enabled = false;
             this.openPdfButton.FlatAppearance.BorderSize = 0;
             this.openPdfButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.openPdfButton.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
             this.openPdfButton.ForeColor = System.Drawing.Color.White;
-            this.openPdfButton.Location = new System.Drawing.Point(208, 500);
+            this.openPdfButton.Location = new System.Drawing.Point(330, 500);
             this.openPdfButton.Name = "openPdfButton";
             this.openPdfButton.Size = new System.Drawing.Size(168, 44);
             this.openPdfButton.TabIndex = 8;

@@ -15,10 +15,20 @@ namespace HashPDF.WinForms
     public partial class MainForm : Form
     {
         private readonly BackgroundWorker worker;
+        private readonly BackgroundWorker dxfWorker;
         private static readonly string PreferencesDirectoryPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "HashPDF");
         private static readonly string PreferencesFilePath = Path.Combine(PreferencesDirectoryPath, "ui-preferences.ini");
+        private const int LeftColumnContentLeft = 27;
+        private const int LeftColumnContentRight = 27;
+        private const int DropSurfaceTop = 118;
+        private const int LeftColumnBottomMargin = 24;
+        private const int DxfToolsGapFromDrop = 24;
+        private const int DxfToolsDescriptionGap = 5;
+        private const int DxfButtonsGap = 12;
+        private const int DxfButtonHeight = 44;
+        private const int DxfButtonGap = 16;
         private DropSurfacePanel dropSurfacePanel;
         private AppLanguage currentLanguage;
         private AppTheme currentTheme;
@@ -34,9 +44,17 @@ namespace HashPDF.WinForms
             ApplyWindowIcon();
             InitializeDropSurfacePanel();
 
+            leftColumn.Resize += LeftColumnResize;
+
             worker = new BackgroundWorker();
             worker.DoWork += WorkerDoWork;
             worker.RunWorkerCompleted += WorkerRunWorkerCompleted;
+
+            dxfWorker = new BackgroundWorker();
+            dxfWorker.DoWork += DxfWorkerDoWork;
+            dxfWorker.RunWorkerCompleted += DxfWorkerRunWorkerCompleted;
+
+            SetDxfLayoutImmediate(false);
 
             LoadUserPreferences();
             ApplyLanguage();
@@ -149,14 +167,16 @@ namespace HashPDF.WinForms
             languageLabel.Text = TextCatalog.Get(currentLanguage, "LanguageLabel");
             inputTitleLabel.Text = TextCatalog.Get(currentLanguage, "InputTitle");
             inputSubtitleLabel.Text = TextCatalog.Get(currentLanguage, "InputSubtitle");
+            dxfToolsTitleLabel.Text = TextCatalog.Get(currentLanguage, "DxfToolsTitle");
+            dxfToolsDescriptionLabel.Text = TextCatalog.Get(currentLanguage, "DxfToolsDescription");
             resultTitleLabel.Text = TextCatalog.Get(currentLanguage, "ResultTitle");
             hashCaptionLabel.Text = TextCatalog.Get(currentLanguage, "HashCaption");
             fileCaptionLabel.Text = TextCatalog.Get(currentLanguage, "FileCaption");
             outputCaptionLabel.Text = TextCatalog.Get(currentLanguage, "PdfCaption");
             openFolderButton.Text = TextCatalog.Get(currentLanguage, "OpenFolderButton");
             openPdfButton.Text = TextCatalog.Get(currentLanguage, "OpenPdfButton");
-            dropSurfacePanel.TitleText = TextCatalog.Get(currentLanguage, "DropTitle");
-            dropSurfacePanel.HintText = TextCatalog.Get(currentLanguage, "DropHint");
+            convertDxfKaekButton.Text = TextCatalog.Get(currentLanguage, "DxfConvertKaekButton");
+            convertDxfAllButton.Text = TextCatalog.Get(currentLanguage, "DxfConvertAllButton");
             suppressOptionEvents = true;
             try
             {
@@ -202,6 +222,8 @@ namespace HashPDF.WinForms
             subtitleLabel.ForeColor = mutedText;
             inputTitleLabel.ForeColor = headingText;
             inputSubtitleLabel.ForeColor = mutedText;
+            dxfToolsTitleLabel.ForeColor = headingText;
+            dxfToolsDescriptionLabel.ForeColor = mutedText;
             resultTitleLabel.ForeColor = headingText;
             hashCaptionLabel.ForeColor = mutedText;
             fileCaptionLabel.ForeColor = mutedText;
@@ -224,6 +246,8 @@ namespace HashPDF.WinForms
             openFolderButton.BackColor = panelBackground;
             openFolderButton.ForeColor = dark ? Color.White : bodyText;
             openFolderButton.FlatAppearance.BorderColor = secondaryBorder;
+
+            ApplyDxfButtonTheme();
 
             openPdfButton.BackColor = primaryButton;
             openPdfButton.ForeColor = Color.White;
@@ -362,6 +386,9 @@ namespace HashPDF.WinForms
 
         private void RefreshVisibleState()
         {
+            RefreshDropSurfaceText();
+            RefreshDxfLayout(true);
+
             if (worker.IsBusy)
             {
                 hashTextBox.Text = TextCatalog.Get(currentLanguage, "BusyHashPlaceholder");
@@ -371,6 +398,29 @@ namespace HashPDF.WinForms
                 outputValueLabel.Text = TextCatalog.Get(currentLanguage, "BusyPdfValue");
                 statusLabel.Text = TextCatalog.Get(currentLanguage, "BusyStatus");
                 UpdateActionButtons(false);
+                return;
+            }
+
+            if (dxfWorker.IsBusy)
+            {
+                if (lastResult != null)
+                {
+                    hashTextBox.Text = lastResult.HashValue;
+                    fileValueLabel.Text = lastResult.SourceFilePath;
+                    outputValueLabel.Text = lastResult.OutputPdfPath;
+                    UpdateActionButtons(true);
+                }
+                else
+                {
+                    hashTextBox.Text = TextCatalog.Get(currentLanguage, "HashPlaceholder");
+                    fileValueLabel.Text = string.IsNullOrEmpty(selectedFilePath)
+                        ? TextCatalog.Get(currentLanguage, "FilePlaceholder")
+                        : selectedFilePath;
+                    outputValueLabel.Text = TextCatalog.Get(currentLanguage, "PdfPlaceholder");
+                    UpdateActionButtons(false);
+                }
+
+                statusLabel.Text = TextCatalog.Get(currentLanguage, "DxfBusyStatus");
                 return;
             }
 
@@ -399,6 +449,184 @@ namespace HashPDF.WinForms
             bool enableButtons = canOpenFiles || keepWhiteTextInDarkMode;
             openFolderButton.Enabled = enableButtons;
             openPdfButton.Enabled = enableButtons;
+            convertDxfKaekButton.Enabled = true;
+            convertDxfAllButton.Enabled = true;
+            ApplyDxfButtonTheme();
+        }
+
+        private bool CanConvertLoadedDxf()
+        {
+            return !worker.IsBusy
+                && !dxfWorker.IsBusy
+                && IsLoadedDxfFile();
+        }
+
+        private bool IsLoadedDxfFile()
+        {
+            return !string.IsNullOrEmpty(selectedFilePath)
+                && File.Exists(selectedFilePath)
+                && Path.GetExtension(selectedFilePath).Equals(".dxf", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private void ApplyDxfButtonTheme()
+        {
+            bool dark = currentTheme == AppTheme.Dark;
+            Color textColor = dark ? Color.White : Color.FromArgb(37, 50, 65);
+            Color backColor = dark ? Color.FromArgb(33, 39, 45) : Color.White;
+            Color borderColor = dark ? Color.FromArgb(73, 83, 92) : Color.FromArgb(220, 226, 222);
+            Cursor cursor = CanConvertLoadedDxf() ? Cursors.Hand : Cursors.Default;
+
+            ApplyDxfButtonTheme(convertDxfKaekButton, textColor, backColor, borderColor, cursor);
+            ApplyDxfButtonTheme(convertDxfAllButton, textColor, backColor, borderColor, cursor);
+        }
+
+        private static void ApplyDxfButtonTheme(
+            Button button,
+            Color textColor,
+            Color backColor,
+            Color borderColor,
+            Cursor cursor)
+        {
+            button.ForeColor = textColor;
+            button.BackColor = backColor;
+            button.FlatAppearance.BorderColor = borderColor;
+            button.Cursor = cursor;
+        }
+
+        private void RefreshDxfLayout(bool animate)
+        {
+            bool shouldShowTools = IsLoadedDxfFile();
+            SetDxfLayoutImmediate(shouldShowTools);
+        }
+
+        private void SetDxfLayoutImmediate(bool showTools)
+        {
+            ApplyDxfToolsDimensions();
+            dropSurfaceHostPanel.Bounds = GetDropSurfaceBounds(showTools);
+
+            if (showTools)
+            {
+                dxfToolsTitleLabel.Location = GetDxfToolsTitleLocation();
+                dxfToolsDescriptionLabel.Location = GetDxfToolsDescriptionLocation();
+                convertDxfKaekButton.Location = GetDxfKaekButtonLocation();
+                convertDxfAllButton.Location = GetDxfAllButtonLocation();
+                SetDxfToolsVisible(true);
+            }
+            else
+            {
+                dxfToolsTitleLabel.Location = GetHiddenDxfToolsLocation(dxfToolsTitleLabel.Left);
+                dxfToolsDescriptionLabel.Location = GetHiddenDxfToolsLocation(dxfToolsDescriptionLabel.Left);
+                convertDxfKaekButton.Location = GetHiddenDxfToolsLocation(convertDxfKaekButton.Left);
+                convertDxfAllButton.Location = GetHiddenDxfToolsLocation(convertDxfAllButton.Left);
+                SetDxfToolsVisible(false);
+            }
+        }
+
+        private void SetDxfToolsVisible(bool visible)
+        {
+            dxfToolsTitleLabel.Visible = visible;
+            dxfToolsDescriptionLabel.Visible = visible;
+            convertDxfKaekButton.Visible = visible;
+            convertDxfAllButton.Visible = visible;
+        }
+
+        private void ApplyDxfToolsDimensions()
+        {
+            int contentWidth = GetLeftColumnContentWidth();
+            int buttonWidth = (contentWidth - DxfButtonGap) / 2;
+            dxfToolsDescriptionLabel.Width = contentWidth;
+            convertDxfKaekButton.Size = new Size(buttonWidth, DxfButtonHeight);
+            convertDxfAllButton.Size = new Size(buttonWidth, DxfButtonHeight);
+        }
+
+        private Rectangle GetDropSurfaceBounds(bool showTools)
+        {
+            int contentWidth = GetLeftColumnContentWidth();
+            int height = showTools ? GetCompactDropSurfaceHeight() : GetExpandedDropSurfaceHeight();
+            return new Rectangle(LeftColumnContentLeft, DropSurfaceTop, contentWidth, height);
+        }
+
+        private int GetLeftColumnContentWidth()
+        {
+            return Math.Max(220, leftColumn.ClientSize.Width - LeftColumnContentLeft - LeftColumnContentRight);
+        }
+
+        private int GetExpandedDropSurfaceHeight()
+        {
+            return Math.Max(240, leftColumn.ClientSize.Height - DropSurfaceTop - LeftColumnBottomMargin);
+        }
+
+        private int GetCompactDropSurfaceHeight()
+        {
+            return Math.Max(180, GetDxfToolsTitleLocation().Y - DxfToolsGapFromDrop - DropSurfaceTop);
+        }
+
+        private Point GetDxfToolsTitleLocation()
+        {
+            return new Point(
+                LeftColumnContentLeft,
+                GetDxfToolsDescriptionLocation().Y - dxfToolsTitleLabel.Height - DxfToolsDescriptionGap);
+        }
+
+        private Point GetDxfToolsDescriptionLocation()
+        {
+            return new Point(
+                LeftColumnContentLeft,
+                GetDxfKaekButtonLocation().Y - dxfToolsDescriptionLabel.Height - DxfButtonsGap);
+        }
+
+        private Point GetDxfKaekButtonLocation()
+        {
+            return new Point(
+                LeftColumnContentLeft,
+                leftColumn.ClientSize.Height - DxfButtonHeight - LeftColumnBottomMargin);
+        }
+
+        private Point GetDxfAllButtonLocation()
+        {
+            return new Point(LeftColumnContentLeft + convertDxfKaekButton.Width + DxfButtonGap, GetDxfKaekButtonLocation().Y);
+        }
+
+        private Point GetHiddenDxfToolsLocation(int left)
+        {
+            return new Point(left, leftColumn.ClientSize.Height + 12);
+        }
+
+        private void LeftColumnResize(object sender, EventArgs e)
+        {
+            SetDxfLayoutImmediate(IsLoadedDxfFile());
+        }
+
+        private void RefreshDropSurfaceText()
+        {
+            if (dropSurfacePanel == null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(selectedFilePath))
+            {
+                dropSurfacePanel.HasLoadedFile = false;
+                dropSurfacePanel.TitleText = TextCatalog.Get(currentLanguage, "DropTitle");
+                dropSurfacePanel.HintText = TextCatalog.Get(currentLanguage, "DropHint");
+                return;
+            }
+
+            dropSurfacePanel.HasLoadedFile = true;
+            string fileName = Path.GetFileName(selectedFilePath);
+            if (worker.IsBusy)
+            {
+                dropSurfacePanel.TitleText = TextCatalog.Get(currentLanguage, "LoadedFileBusyDropTitle");
+            }
+            else
+            {
+                dropSurfacePanel.TitleText = TextCatalog.Get(currentLanguage, "LoadedFileDropTitle");
+            }
+
+            dropSurfacePanel.HintText = string.Format(
+                TextCatalog.Get(currentLanguage, "LoadedFileDropHint"),
+                string.IsNullOrEmpty(fileName) ? selectedFilePath : fileName,
+                selectedFilePath);
         }
 
         private void ResultPanelPaint(object sender, PaintEventArgs e)
@@ -500,7 +728,7 @@ namespace HashPDF.WinForms
 
         private void BeginProcessing(string filePath)
         {
-            if (worker.IsBusy)
+            if (worker.IsBusy || dxfWorker.IsBusy)
             {
                 ShowError(TextCatalog.Get(currentLanguage, "BusyError"));
                 return;
@@ -518,6 +746,202 @@ namespace HashPDF.WinForms
             RefreshVisibleState();
         }
 
+        private void ConvertDxfKaekButtonClick(object sender, EventArgs e)
+        {
+            BeginDxfConversionForLoadedFile(DxfConversionMode.KaekLayer);
+        }
+
+        private void ConvertDxfAllButtonClick(object sender, EventArgs e)
+        {
+            BeginDxfConversionForLoadedFile(DxfConversionMode.AllLayers);
+        }
+
+        private void BeginDxfConversionForLoadedFile(DxfConversionMode mode)
+        {
+            if (worker.IsBusy || dxfWorker.IsBusy)
+            {
+                ShowError(TextCatalog.Get(currentLanguage, "BusyError"));
+                return;
+            }
+
+            if (string.IsNullOrEmpty(selectedFilePath)
+                || !File.Exists(selectedFilePath)
+                || !Path.GetExtension(selectedFilePath).Equals(".dxf", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowError(TextCatalog.Get(currentLanguage, "DxfNoLoadedFileError"));
+                return;
+            }
+
+            BeginDxfConversion(selectedFilePath, mode);
+        }
+
+        private void BeginDxfConversion(string filePath, DxfConversionMode mode)
+        {
+            if (worker.IsBusy || dxfWorker.IsBusy)
+            {
+                ShowError(TextCatalog.Get(currentLanguage, "BusyError"));
+                return;
+            }
+
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+            {
+                ShowError(TextCatalog.Get(currentLanguage, "MissingFileError"));
+                return;
+            }
+
+            dxfWorker.RunWorkerAsync(new DxfConversionRequest(filePath, mode));
+            RefreshVisibleState();
+        }
+
+        private void DxfWorkerDoWork(object sender, DoWorkEventArgs e)
+        {
+            DxfConversionRequest request = (DxfConversionRequest)e.Argument;
+            e.Result = DxfConversionService.ConvertMTextToText(request);
+        }
+
+        private void DxfWorkerRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            RefreshVisibleState();
+
+            if (e.Error != null)
+            {
+                ShowDxfConversionError(e.Error);
+                return;
+            }
+
+            DxfConversionResult result = e.Result as DxfConversionResult;
+            if (result == null)
+            {
+                statusLabel.Text = TextCatalog.Get(currentLanguage, "DxfFailedStatus");
+                ShowError(TextCatalog.Get(currentLanguage, "GenericDxfError"));
+                return;
+            }
+
+            statusLabel.Text = string.Format(
+                TextCatalog.Get(currentLanguage, "DxfReadyStatus"),
+                result.ConvertedEntityCount,
+                result.OutputFilePath);
+
+            DxfCompletionAction action = ShowDxfCompletionDialog(result);
+            if (action == DxfCompletionAction.LoadGeneratedFile)
+            {
+                BeginProcessing(result.OutputFilePath);
+            }
+            else if (action == DxfCompletionAction.OpenFolder)
+            {
+                OpenFileInFolder(result.OutputFilePath);
+            }
+        }
+
+        private DxfCompletionAction ShowDxfCompletionDialog(DxfConversionResult result)
+        {
+            DxfCompletionAction selectedAction = DxfCompletionAction.None;
+            using (Form dialog = CreateModalDialog(TextCatalog.Get(currentLanguage, "DxfCompleteTitle"), 500, 132))
+            {
+                Label messageLabel = CreateDialogLabel(
+                    string.Format(
+                        TextCatalog.Get(currentLanguage, "DxfCompleteMessage"),
+                        Path.GetFileName(result.OutputFilePath),
+                        result.ConvertedEntityCount),
+                    24,
+                    14,
+                    452,
+                    42);
+                dialog.Controls.Add(messageLabel);
+
+                Button closeButton = CreateSecondaryButton();
+                closeButton.Text = TextCatalog.Get(currentLanguage, "CloseButton");
+                closeButton.Location = new Point(46, 74);
+                closeButton.Size = new Size(138, 42);
+                closeButton.DialogResult = DialogResult.Cancel;
+                ApplyDialogButtonTheme(closeButton, false);
+                dialog.Controls.Add(closeButton);
+                dialog.CancelButton = closeButton;
+
+                Button openFolderButton = CreateSecondaryButton();
+                openFolderButton.Text = TextCatalog.Get(currentLanguage, "DxfOpenFolderButton");
+                openFolderButton.Location = new Point(194, 74);
+                openFolderButton.Size = new Size(138, 42);
+                openFolderButton.Click += delegate
+                {
+                    selectedAction = DxfCompletionAction.OpenFolder;
+                    dialog.DialogResult = DialogResult.OK;
+                    dialog.Close();
+                };
+                ApplyDialogButtonTheme(openFolderButton, false);
+                dialog.Controls.Add(openFolderButton);
+
+                Button loadButton = CreatePrimaryButton();
+                loadButton.Text = TextCatalog.Get(currentLanguage, "DxfLoadButton");
+                loadButton.Location = new Point(342, 74);
+                loadButton.Size = new Size(138, 42);
+                loadButton.Click += delegate
+                {
+                    selectedAction = DxfCompletionAction.LoadGeneratedFile;
+                    dialog.DialogResult = DialogResult.OK;
+                    dialog.Close();
+                };
+                ApplyDialogButtonTheme(loadButton, true);
+                dialog.Controls.Add(loadButton);
+                dialog.AcceptButton = loadButton;
+
+                dialog.ShowDialog(this);
+            }
+
+            return selectedAction;
+        }
+
+        private Form CreateModalDialog(string title, int width, int height)
+        {
+            bool dark = currentTheme == AppTheme.Dark;
+            Form dialog = new Form();
+            dialog.AutoScaleMode = AutoScaleMode.None;
+            dialog.BackColor = dark ? Color.FromArgb(33, 39, 45) : Color.White;
+            dialog.ClientSize = new Size(width, height);
+            dialog.Font = Font;
+            dialog.FormBorderStyle = FormBorderStyle.FixedDialog;
+            dialog.MaximizeBox = false;
+            dialog.MinimizeBox = false;
+            dialog.ShowInTaskbar = false;
+            dialog.StartPosition = FormStartPosition.CenterParent;
+            dialog.Text = title;
+            return dialog;
+        }
+
+        private Label CreateDialogLabel(string text, int left, int top, int width, int height)
+        {
+            bool dark = currentTheme == AppTheme.Dark;
+            Label label = new Label();
+            label.BackColor = dark ? Color.FromArgb(33, 39, 45) : Color.White;
+            label.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 161);
+            label.ForeColor = dark ? Color.FromArgb(220, 229, 225) : Color.FromArgb(37, 50, 65);
+            label.Location = new Point(left, top);
+            label.Size = new Size(width, height);
+            label.Text = text;
+            return label;
+        }
+
+        private void ApplyDialogButtonTheme(Button button, bool primary)
+        {
+            bool dark = currentTheme == AppTheme.Dark;
+            Color bodyText = dark ? Color.FromArgb(220, 229, 225) : Color.FromArgb(37, 50, 65);
+            Color panelBackground = dark ? Color.FromArgb(33, 39, 45) : Color.White;
+            Color secondaryBorder = dark ? Color.FromArgb(73, 83, 92) : Color.FromArgb(220, 226, 222);
+
+            if (primary)
+            {
+                button.BackColor = dark ? Color.FromArgb(40, 151, 117) : Color.FromArgb(24, 115, 90);
+                button.ForeColor = Color.White;
+                button.FlatAppearance.BorderSize = 0;
+                return;
+            }
+
+            button.BackColor = panelBackground;
+            button.ForeColor = bodyText;
+            button.FlatAppearance.BorderSize = 1;
+            button.FlatAppearance.BorderColor = secondaryBorder;
+        }
+
         private void OpenFolderButtonClick(object sender, EventArgs e)
         {
             if (lastResult == null || string.IsNullOrEmpty(lastResult.OutputPdfPath))
@@ -527,7 +951,7 @@ namespace HashPDF.WinForms
 
             try
             {
-                Process.Start("explorer.exe", string.Format("/select,\"{0}\"", lastResult.OutputPdfPath));
+                OpenFileInFolder(lastResult.OutputPdfPath);
             }
             catch (Exception ex)
             {
@@ -554,6 +978,11 @@ namespace HashPDF.WinForms
             }
         }
 
+        private void OpenFileInFolder(string filePath)
+        {
+            Process.Start("explorer.exe", string.Format("/select,\"{0}\"", filePath));
+        }
+
         private void ShowError(string message)
         {
             MessageBox.Show(
@@ -562,6 +991,63 @@ namespace HashPDF.WinForms
                 TextCatalog.Get(currentLanguage, "ErrorTitle"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
+        }
+
+        private void ShowInformation(string message)
+        {
+            MessageBox.Show(
+                this,
+                message,
+                TextCatalog.Get(currentLanguage, "InfoTitle"),
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+
+        private void ShowDxfConversionError(Exception error)
+        {
+            DxfConversionException dxfException = error as DxfConversionException;
+            if (dxfException == null)
+            {
+                statusLabel.Text = TextCatalog.Get(currentLanguage, "DxfFailedStatus");
+                ShowError(TextCatalog.Get(currentLanguage, "GenericDxfError"));
+                return;
+            }
+
+            switch (dxfException.Code)
+            {
+                case DxfConversionErrorCode.MissingFile:
+                    statusLabel.Text = TextCatalog.Get(currentLanguage, "DxfFailedStatus");
+                    ShowError(TextCatalog.Get(currentLanguage, "MissingFileError"));
+                    break;
+                case DxfConversionErrorCode.SourceDirectoryUnavailable:
+                    statusLabel.Text = TextCatalog.Get(currentLanguage, "DxfFailedStatus");
+                    ShowError(TextCatalog.Get(currentLanguage, "MissingDirectoryError"));
+                    break;
+                case DxfConversionErrorCode.UnsupportedFileType:
+                    statusLabel.Text = TextCatalog.Get(currentLanguage, "DxfFailedStatus");
+                    ShowError(TextCatalog.Get(currentLanguage, "DxfUnsupportedFileError"));
+                    break;
+                case DxfConversionErrorCode.UnsupportedBinaryDxf:
+                    statusLabel.Text = TextCatalog.Get(currentLanguage, "DxfFailedStatus");
+                    ShowError(TextCatalog.Get(currentLanguage, "DxfBinaryError"));
+                    break;
+                case DxfConversionErrorCode.MalformedDxf:
+                    statusLabel.Text = TextCatalog.Get(currentLanguage, "DxfFailedStatus");
+                    ShowError(TextCatalog.Get(currentLanguage, "DxfMalformedError"));
+                    break;
+                case DxfConversionErrorCode.CannotWriteDxf:
+                    statusLabel.Text = TextCatalog.Get(currentLanguage, "DxfFailedStatus");
+                    ShowError(TextCatalog.Get(currentLanguage, "DxfWriteError"));
+                    break;
+                case DxfConversionErrorCode.NoMatchingMText:
+                    statusLabel.Text = TextCatalog.Get(currentLanguage, "DxfNoMatchesStatus");
+                    ShowInformation(TextCatalog.Get(currentLanguage, "DxfNoMatchesMessage"));
+                    break;
+                default:
+                    statusLabel.Text = TextCatalog.Get(currentLanguage, "DxfFailedStatus");
+                    ShowError(TextCatalog.Get(currentLanguage, "GenericDxfError"));
+                    break;
+            }
         }
 
         private void ShowProcessingError(Exception error)
@@ -630,6 +1116,13 @@ namespace HashPDF.WinForms
         {
             Light,
             Dark
+        }
+
+        private enum DxfCompletionAction
+        {
+            None,
+            LoadGeneratedFile,
+            OpenFolder
         }
     }
 }
