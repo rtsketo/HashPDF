@@ -51,11 +51,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\DropSurfacePanel.cs" />
+    <Compile Include="Exceptions\DxfConversionException.cs" />
     <Compile Include="Exceptions\HashPdfException.cs" />
     <Compile Include="Localization\AppLanguage.cs" />
     <Compile Include="Localization\TextCatalog.cs" />
+    <Compile Include="Models\DxfConversionMode.cs" />
+    <Compile Include="Models\DxfConversionRequest.cs" />
+    <Compile Include="Models\DxfConversionResult.cs" />
     <Compile Include="Models\HashPdfResult.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Services\DxfConversionService.cs" />
     <Compile Include="Services\HashPdfService.cs" />
     <Compile Include="Services\PdfDocumentWriter.cs" />
     <Compile Include="MainForm.Designer.cs">
