@@ -35,6 +35,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "..\src\HashPDF.WinForms\bin\Release\HashPDF.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\src\HashPDF.WinForms\bin\Release\HashPDF.pdb"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "..\src\HashPDF.Updater\bin\Release\HashPDF.Updater.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\src\HashPDF.Updater\bin\Release\HashPDF.Updater.pdb"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\src\HashPDF.WinForms\Assets\HashPDF.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "redist\dotNetFx40_Full_x86_x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall skipifsourcedoesntexist
 
