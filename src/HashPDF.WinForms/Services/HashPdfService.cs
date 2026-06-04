@@ -67,7 +67,7 @@ namespace HashPDF.WinForms.Services
                 StringBuilder builder = new StringBuilder(hashBytes.Length * 2);
                 for (int index = 0; index < hashBytes.Length; index++)
                 {
-                    builder.Append(hashBytes[index].ToString("X2", CultureInfo.InvariantCulture));
+                    builder.Append(hashBytes[index].ToString("x2", CultureInfo.InvariantCulture));
                 }
 
                 return builder.ToString();
