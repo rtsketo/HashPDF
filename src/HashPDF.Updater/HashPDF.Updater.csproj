@@ -3,15 +3,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6B0AF4D9-3D15-4D6D-A0BF-6D32766952A0}</ProjectGuid>
+    <ProjectGuid>{8E4A56C5-89F2-4D51-9D63-5F4E7EF2E382}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HashPDF.WinForms</RootNamespace>
-    <AssemblyName>HashPDF</AssemblyName>
+    <RootNamespace>HashPDF.Updater</RootNamespace>
+    <AssemblyName>HashPDF.Updater</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
     <FileAlignment>512</FileAlignment>
-    <ApplicationIcon>Assets\HashPDF.ico</ApplicationIcon>
+    <ApplicationIcon>..\HashPDF.WinForms\Assets\HashPDF.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -43,44 +43,18 @@
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\HashPDF.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Controls\DropSurfacePanel.cs" />
-    <Compile Include="Exceptions\DxfConversionException.cs" />
-    <Compile Include="Exceptions\HashPdfException.cs" />
-    <Compile Include="Localization\AppLanguage.cs" />
-    <Compile Include="Localization\TextCatalog.cs" />
-    <Compile Include="Models\DxfConversionMode.cs" />
-    <Compile Include="Models\DxfConversionRequest.cs" />
-    <Compile Include="Models\DxfConversionResult.cs" />
-    <Compile Include="Models\HashPdfResult.cs" />
-    <Compile Include="Models\UpdateInfo.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Services\DxfConversionService.cs" />
-    <Compile Include="Services\HashPdfService.cs" />
-    <Compile Include="Services\PdfDocumentWriter.cs" />
-    <Compile Include="Services\UpdateCheckService.cs" />
-    <Compile Include="Services\UpdateLauncher.cs" />
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MainForm.cs">
+    <Compile Include="ReleaseAsset.cs" />
+    <Compile Include="ReleaseClient.cs" />
+    <Compile Include="UpdateArguments.cs" />
+    <Compile Include="UpdateManifest.cs" />
+    <Compile Include="UpdateProgress.cs" />
+    <Compile Include="UpdaterEngine.cs" />
+    <Compile Include="UpdaterForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="UpdaterText.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <Target Name="CopyUpdaterToOutput" AfterTargets="Build">
-    <ItemGroup>
-      <UpdaterOutput Include="..\HashPDF.Updater\bin\$(Configuration)\HashPDF.Updater.exe" />
-      <UpdaterOutput Include="..\HashPDF.Updater\bin\$(Configuration)\HashPDF.Updater.pdb" Condition="Exists('..\HashPDF.Updater\bin\$(Configuration)\HashPDF.Updater.pdb')" />
-    </ItemGroup>
-    <Copy SourceFiles="@(UpdaterOutput)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" Condition="Exists('..\HashPDF.Updater\bin\$(Configuration)\HashPDF.Updater.exe')" />
-  </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

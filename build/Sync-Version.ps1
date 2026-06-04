@@ -7,6 +7,7 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $versionPath = Join-Path $repoRoot "VERSION"
 $assemblyInfoPath = Join-Path $repoRoot "src\HashPDF.WinForms\Properties\AssemblyInfo.cs"
+$updaterAssemblyInfoPath = Join-Path $repoRoot "src\HashPDF.Updater\Properties\AssemblyInfo.cs"
 $installerPath = Join-Path $repoRoot "installer\HashPDF.iss"
 
 if (-not (Test-Path $versionPath)) {
@@ -47,6 +48,11 @@ function Update-Content {
 }
 
 Update-Content -Path $assemblyInfoPath -Replacements @{
+    '\[assembly: AssemblyVersion\(".*?"\)\]' = "[assembly: AssemblyVersion(`"$assemblyVersion`")]"
+    '\[assembly: AssemblyFileVersion\(".*?"\)\]' = "[assembly: AssemblyFileVersion(`"$assemblyVersion`")]"
+}
+
+Update-Content -Path $updaterAssemblyInfoPath -Replacements @{
     '\[assembly: AssemblyVersion\(".*?"\)\]' = "[assembly: AssemblyVersion(`"$assemblyVersion`")]"
     '\[assembly: AssemblyFileVersion\(".*?"\)\]' = "[assembly: AssemblyFileVersion(`"$assemblyVersion`")]"
 }

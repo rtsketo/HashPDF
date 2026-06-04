@@ -16,6 +16,7 @@ namespace HashPDF.WinForms
     {
         private readonly BackgroundWorker worker;
         private readonly BackgroundWorker dxfWorker;
+        private readonly BackgroundWorker updateWorker;
         private static readonly string PreferencesDirectoryPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "HashPDF");
@@ -35,6 +36,7 @@ namespace HashPDF.WinForms
         private string selectedFilePath;
         private HashPdfResult lastResult;
         private bool suppressOptionEvents;
+        private bool updateCheckStarted;
         private Color panelBorderColor;
         private Color panelTopAccentColor;
 
@@ -54,11 +56,21 @@ namespace HashPDF.WinForms
             dxfWorker.DoWork += DxfWorkerDoWork;
             dxfWorker.RunWorkerCompleted += DxfWorkerRunWorkerCompleted;
 
+            updateWorker = new BackgroundWorker();
+            updateWorker.DoWork += UpdateWorkerDoWork;
+            updateWorker.RunWorkerCompleted += UpdateWorkerRunWorkerCompleted;
+
             SetDxfLayoutImmediate(false);
 
             LoadUserPreferences();
             ApplyLanguage();
             ApplyTheme();
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            BeginStartupUpdateCheck();
         }
 
         private void ApplyWindowIcon()
@@ -441,6 +453,97 @@ namespace HashPDF.WinForms
             outputValueLabel.Text = TextCatalog.Get(currentLanguage, "PdfPlaceholder");
             statusLabel.Text = TextCatalog.Get(currentLanguage, "IdleStatus");
             UpdateActionButtons(false);
+        }
+
+        private void BeginStartupUpdateCheck()
+        {
+            if (updateCheckStarted || updateWorker.IsBusy)
+            {
+                return;
+            }
+
+            updateCheckStarted = true;
+            updateWorker.RunWorkerAsync();
+        }
+
+        private void UpdateWorkerDoWork(object sender, DoWorkEventArgs e)
+        {
+            e.Result = UpdateCheckService.CheckForUpdate();
+        }
+
+        private void UpdateWorkerRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null || IsDisposed)
+            {
+                return;
+            }
+
+            UpdateInfo updateInfo = e.Result as UpdateInfo;
+            if (updateInfo == null)
+            {
+                return;
+            }
+
+            bool shouldInstall = ShowUpdateAvailableDialog(updateInfo);
+            if (!shouldInstall)
+            {
+                return;
+            }
+
+            try
+            {
+                UpdateLauncher.Launch(updateInfo, currentLanguage);
+                BeginInvoke(new MethodInvoker(delegate
+                {
+                    Application.Exit();
+                }));
+            }
+            catch (Exception ex)
+            {
+                ShowError(string.Format(TextCatalog.Get(currentLanguage, "UpdateLaunchError"), ex.Message));
+            }
+        }
+
+        private bool ShowUpdateAvailableDialog(UpdateInfo updateInfo)
+        {
+            bool install = false;
+            using (Form dialog = CreateModalDialog(TextCatalog.Get(currentLanguage, "UpdateAvailableTitle"), 500, 160))
+            {
+                Label messageLabel = CreateDialogLabel(
+                    string.Format(TextCatalog.Get(currentLanguage, "UpdateAvailableMessage"), updateInfo.Version),
+                    24,
+                    16,
+                    452,
+                    58);
+                dialog.Controls.Add(messageLabel);
+
+                Button laterButton = CreateSecondaryButton();
+                laterButton.Text = TextCatalog.Get(currentLanguage, "UpdateLaterButton");
+                laterButton.Location = new Point(194, 96);
+                laterButton.Size = new Size(138, 42);
+                laterButton.DialogResult = DialogResult.Cancel;
+                ApplyDialogButtonTheme(laterButton, false);
+                dialog.Controls.Add(laterButton);
+                dialog.CancelButton = laterButton;
+
+                Button installButton = CreatePrimaryButton();
+                installButton.Text = TextCatalog.Get(currentLanguage, "UpdateInstallButton");
+                installButton.Location = new Point(342, 96);
+                installButton.Size = new Size(138, 42);
+                installButton.Click += delegate
+                {
+                    install = true;
+                    dialog.DialogResult = DialogResult.OK;
+                    dialog.Close();
+                };
+                ApplyDialogButtonTheme(installButton, true);
+                dialog.Controls.Add(installButton);
+                dialog.AcceptButton = installButton;
+
+                dialog.ShowDialog(this);
+            }
+
+            return install;
         }
 
         private void UpdateActionButtons(bool canOpenFiles)

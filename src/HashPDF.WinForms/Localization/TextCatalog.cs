@@ -69,7 +69,12 @@ namespace HashPDF.WinForms.Localization
             { "DxfMalformedError", "Το επιλεγμένο DXF δεν έχει έγκυρη ASCII DXF δομή." },
             { "DxfWriteError", "Δεν ήταν δυνατή η δημιουργία του νέου DXF στον ίδιο φάκελο με το αρχικό αρχείο." },
             { "DxfNoMatchesMessage", "Δεν βρέθηκαν MTEXT που να ταιριάζουν με την επιλογή μετατροπής." },
-            { "GenericDxfError", "Παρουσιάστηκε μη αναμενόμενο σφάλμα κατά τη μετατροπή του DXF." }
+            { "GenericDxfError", "Παρουσιάστηκε μη αναμενόμενο σφάλμα κατά τη μετατροπή του DXF." },
+            { "UpdateAvailableTitle", "Διαθέσιμη ενημέρωση" },
+            { "UpdateAvailableMessage", "Υπάρχει νέα έκδοση του HashPDF: {0}.\r\nΘέλεις να γίνει λήψη και εγκατάσταση τώρα;" },
+            { "UpdateInstallButton", "Εγκατάσταση" },
+            { "UpdateLaterButton", "Αργότερα" },
+            { "UpdateLaunchError", "Δεν ήταν δυνατή η εκκίνηση της ενημέρωσης.\r\n{0}" }
         };
 
         private static readonly IDictionary<string, string> English = new Dictionary<string, string>
@@ -137,7 +142,12 @@ namespace HashPDF.WinForms.Localization
             { "DxfMalformedError", "The selected DXF does not contain a valid ASCII DXF structure." },
             { "DxfWriteError", "The new DXF could not be created in the same directory as the source file." },
             { "DxfNoMatchesMessage", "No MTEXT entities matched the selected conversion scope." },
-            { "GenericDxfError", "An unexpected error occurred while converting the DXF." }
+            { "GenericDxfError", "An unexpected error occurred while converting the DXF." },
+            { "UpdateAvailableTitle", "Update available" },
+            { "UpdateAvailableMessage", "A new HashPDF version is available: {0}.\r\nDo you want to download and install it now?" },
+            { "UpdateInstallButton", "Install" },
+            { "UpdateLaterButton", "Later" },
+            { "UpdateLaunchError", "The update could not be started.\r\n{0}" }
         };
 
         public static string Get(AppLanguage language, string key)
