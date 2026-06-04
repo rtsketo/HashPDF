@@ -1,5 +1,5 @@
 #define MyAppName "HashPDF"
-#define MyAppVersion "0.1.6"
+#define MyAppVersion "0.1.7"
 #define MyAppPublisher "HashPDF"
 #define MyAppURL "https://github.com/rtsketo/HashPDF"
 #define MyAppExeName "HashPDF.exe"
