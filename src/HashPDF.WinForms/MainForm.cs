@@ -939,7 +939,7 @@ namespace HashPDF.WinForms
         private DxfCompletionAction ShowDxfCompletionDialog(DxfConversionResult result)
         {
             DxfCompletionAction selectedAction = DxfCompletionAction.None;
-            using (Form dialog = CreateModalDialog(TextCatalog.Get(currentLanguage, "DxfCompleteTitle"), 500, 132))
+            using (Form dialog = CreateModalDialog(TextCatalog.Get(currentLanguage, "DxfCompleteTitle"), 500, 174))
             {
                 Label messageLabel = CreateDialogLabel(
                     string.Format(
@@ -947,14 +947,14 @@ namespace HashPDF.WinForms
                         Path.GetFileName(result.OutputFilePath),
                         result.ConvertedEntityCount),
                     24,
-                    14,
+                    24,
                     452,
-                    42);
+                    56);
                 dialog.Controls.Add(messageLabel);
 
                 Button closeButton = CreateSecondaryButton();
                 closeButton.Text = TextCatalog.Get(currentLanguage, "CloseButton");
-                closeButton.Location = new Point(46, 74);
+                closeButton.Location = new Point(46, 104);
                 closeButton.Size = new Size(138, 42);
                 closeButton.DialogResult = DialogResult.Cancel;
                 ApplyDialogButtonTheme(closeButton, false);
@@ -963,7 +963,7 @@ namespace HashPDF.WinForms
 
                 Button openFolderButton = CreateSecondaryButton();
                 openFolderButton.Text = TextCatalog.Get(currentLanguage, "DxfOpenFolderButton");
-                openFolderButton.Location = new Point(194, 74);
+                openFolderButton.Location = new Point(194, 104);
                 openFolderButton.Size = new Size(138, 42);
                 openFolderButton.Click += delegate
                 {
@@ -976,7 +976,7 @@ namespace HashPDF.WinForms
 
                 Button loadButton = CreatePrimaryButton();
                 loadButton.Text = TextCatalog.Get(currentLanguage, "DxfLoadButton");
-                loadButton.Location = new Point(342, 74);
+                loadButton.Location = new Point(342, 104);
                 loadButton.Size = new Size(138, 42);
                 loadButton.Click += delegate
                 {
